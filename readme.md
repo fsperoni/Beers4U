@@ -17,7 +17,7 @@ Making use of the [Punk API](https://punkapi.com/), the website can provide a hu
 	* Pilsner;
 * Bitterness Level (measured in IBU);
 * Alcohol Level (measured in ABV);
-* Image (it can be very appealing - mouth watering, if you ask me 😋);
+* Image (if available);
 * Ingredients used:
 	* Hops;
 	* Malts;
