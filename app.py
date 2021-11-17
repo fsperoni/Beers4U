@@ -30,6 +30,9 @@ def show_home():
         return redirect('/login')
     return redirect(f"/users/{session['username']}")
 
+################################################################
+# User routes
+
 @app.route('/register', methods=['GET', 'POST'])
 def register_user():
     """
@@ -54,7 +57,7 @@ def register_user():
             return render_template('register.html', form=form)
         session['username'] = new_user.username
         flash('Welcome! Successfully Created Your Account!', "success")
-        return redirect(f'/users/{username}')
+        return render_template("show_user.html", user=new_user)
     else:
         return render_template('register.html', form=form)
 
@@ -62,8 +65,9 @@ def register_user():
 @app.route('/login', methods=['GET', 'POST'])
 def login_user():
     """
-        Show a form that when submitted will login a user. This form should accept a username and a password.
-        Process the login form, ensuring the user is authenticated and going to /secret if so.
+        Show a form that when submitted will login a user. 
+        Process the login form, ensuring the user is authenticated and 
+        redirecting to user profile if so.
     """
     form = UserLoginForm()
     if form.validate_on_submit():
@@ -73,7 +77,8 @@ def login_user():
         user = User.authenticate(username, password)
         if user:
             session['username'] = user.username
-            return redirect(f'/users/{user.username}')
+            flash(f"Welcome Back, {user.full_name}!", "primary")
+            return render_template("show_user.html", user=user)
         else:
             form.username.errors = ['Invalid username/password.']
 
@@ -81,37 +86,41 @@ def login_user():
 
 @app.route('/users/<username>')
 def show_user(username):
+    """Display user profile."""
+    
     if "username" not in session:
+        form = UserLoginForm()
         flash("Please login first!", "danger")
-        return redirect('/login')
+        return render_template('login.html', form=form)
     user = User.query.get_or_404(username)
-    flash(f"Welcome Back, {user.full_name}!", "primary")
     return render_template("show_user.html", user=user)
 
 @app.route('/users/<username>/delete', methods=['POST'])
 def delete_user(username):
     """Remove the user from the database"""
 
+    form = UserLoginForm()
     if "username" not in session:
         flash("Please login first!", "danger")
-        return redirect('/login')
-    user = User.query.get_or_404(username)
-    if session['username'] == user.username:
-        db.session.delete(user)
-        db.session.commit()
-        session.pop('username')
-        flash("Account deleted!", "success")
     else:
-        flash("You can only delete your own account.", "danger")
-    return redirect('/login')
+        user = User.query.get_or_404(username)
+        if session['username'] == user.username:
+            db.session.delete(user)
+            db.session.commit()
+            session.pop('username')
+            flash("Account deleted!", "success")
+        else:
+            flash("You can only delete your own account.", "danger")
+    return render_template('login.html', form=form)
 
 @app.route('/users/<username>/edit', methods=['GET', 'POST'])
 def edit_user(username):
     """Edit the user in the database"""
 
     if "username" not in session:
+        form = UserLoginForm()
         flash("Please login first!", "danger")
-        return redirect('/login')
+        return render_template('login.html', form=form)
     user = User.query.get_or_404(username)
     form = UserEditForm(obj=user)
     if form.validate_on_submit():
@@ -124,7 +133,7 @@ def edit_user(username):
         db.session.add(user)
         db.session.commit()
         flash("Profile updated!", "success")
-        return redirect(f'/users/{user.username}')
+        return render_template("show_user.html", user=user)
     else:
         return render_template("edit_user.html", form=form)
 
@@ -133,5 +142,6 @@ def user_logout():
     """ Clear any information from the session and redirect to / """
 
     session.pop('username')
+    form = UserLoginForm()
     flash("Goodbye!", "info")
-    return redirect('/login')
+    return render_template('login.html', form=form)
