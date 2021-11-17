@@ -1,0 +1,15 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+
+<h1 class="display-4">Sign Up</h1>
+<p class="lead">Register below to get started!</p>
+
+<form method="POST">
+
+  {% include "_form.html" %}
+
+  <button class="btn btn-success" type="submit">Register</button>
+
+</form>
+{% endblock %}
