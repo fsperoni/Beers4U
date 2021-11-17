@@ -25,10 +25,10 @@ def handle_not_found(event):
 
 @app.route('/')
 def show_home():
-    """Show login or user page"""
-    if "username" not in session:
-        return redirect('/login')
-    return redirect(f"/users/{session['username']}")
+    """Show home page"""
+    # if "username" not in session:
+    #     return redirect('/login')
+    return render_template("home.html")
 
 ################################################################
 # User routes
@@ -139,7 +139,7 @@ def edit_user(username):
 
 @app.route('/logout')
 def user_logout():
-    """ Clear any information from the session and redirect to / """
+    """ Clear any information from the session and redirect to /login """
 
     session.pop('username')
     form = UserLoginForm()
