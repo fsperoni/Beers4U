@@ -70,7 +70,7 @@ class UserModelTestCase(TestCase):
         self.assertEqual(len(u.feedbacks), 0)
 
 
-    # # Signup Tests 
+    # Signup Tests 
 
     def test_valid_register(self):
         u_test = User.register('testtesttest', 'password','testtest@test.com', 'User1', 'Test1')
