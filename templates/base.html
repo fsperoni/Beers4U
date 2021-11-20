@@ -13,7 +13,8 @@
   <nav class="navbar navbar-light bg-dark justify-content-between ">
     <div class="container">
       <a href="/" class="navbar-brand text-light">
-        <div class="align-items-center"><img class="img-fluid align-self-center" src="/static/logo.png" alt="Beers4U logo">
+        <div class="align-items-center">
+          <img class="img-fluid" src="/static/logo.png" alt="Beers4U logo">
           <span class="fs-2 text-white">Beers4U</span>
         </div>
       </a>
@@ -46,6 +47,13 @@
 
     {% block content %}
     {% endblock %}
+
+    <button class="position-absolute bottom-0 mb-3 me-3 end-0 btn btn-dark" 
+      onclick="scrollToTop()" id="scrollBtn" title="Go to top">
+      Top
+    </button>
   </div>
+
+  <script src="/static/app.js"></script>
 </body>
 </html>
