@@ -13,7 +13,9 @@
   <nav class="navbar navbar-light bg-dark justify-content-between ">
     <div class="container">
       <a href="/" class="navbar-brand text-light">
-        <img class="img-fluid" src="/static/logo.png" alt="Beers4U logo">
+        <div class="align-items-center"><img class="img-fluid align-self-center" src="/static/logo.png" alt="Beers4U logo">
+          <span class="fs-2 text-white">Beers4U</span>
+        </div>
       </a>
       <ul class="nav navbar-nav flex-row float-right">
         {% if session['username'] %}

@@ -11,7 +11,8 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    username = db.Column(db.String(20), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     first_name = db.Column(db.String(30), nullable=False)
@@ -31,8 +32,7 @@ class User(db.Model):
         hashed = bcrypt.generate_password_hash(pwd)
         hashed_utf8 = hashed.decode("utf8")
 
-        return cls(username=username, password=hashed_utf8, email=email,
-            first_name=first_name, last_name=last_name)
+        return cls(username=username, password=hashed_utf8, email=email, first_name=first_name, last_name=last_name)
 
     @classmethod
     def authenticate(cls, username, pwd):
@@ -62,7 +62,7 @@ class Feedback(db.Model):
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     is_public = db.Column(db.Boolean, default=False)
-    user_name = db.Column(db.String(20), db.ForeignKey('users.username', 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', 
         ondelete='CASCADE'), nullable=False)
 
     user = db.relationship('User')
@@ -77,9 +77,9 @@ class Like(db.Model):
         primary_key=True
     )
 
-    user_name = db.Column(
-        db.String(20),
-        db.ForeignKey('users.username', ondelete='cascade')
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='cascade')
     )
 
     feedback_id = db.Column(
@@ -98,9 +98,9 @@ class Dislike(db.Model):
         primary_key=True
     )
 
-    user_name = db.Column(
-        db.String(20),
-        db.ForeignKey('users.username', ondelete='cascade')
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='cascade')
     )
 
     feedback_id = db.Column(
@@ -119,9 +119,9 @@ class Favorite(db.Model):
         primary_key=True
     )
 
-    user_name = db.Column(
-        db.String(20),
-        db.ForeignKey('users.username', ondelete='cascade')
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id', ondelete='cascade')
     )
 
     recipe_id = db.Column(

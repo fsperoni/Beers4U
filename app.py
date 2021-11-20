@@ -26,8 +26,8 @@ def handle_not_found(event):
 @app.route('/')
 def show_home():
     """Show home page"""
-    # if "username" not in session:
-    #     return redirect('/login')
+    if "username" not in session:
+        return redirect('/login')
     return render_template("home.html")
 
 ################################################################
@@ -67,8 +67,12 @@ def login_user():
     """
         Show a form that when submitted will login a user. 
         Process the login form, ensuring the user is authenticated and 
-        redirecting to user profile if so.
+        redirecting to search page if so.
     """
+
+    if "username" in session:
+        flash(f"You are currently logged in as {session['username']}", "info")
+        return render_template("home.html")
     form = UserLoginForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -145,3 +149,12 @@ def user_logout():
     form = UserLoginForm()
     flash("Goodbye!", "info")
     return render_template('login.html', form=form)
+
+@app.route('/search')
+def show_search_page():
+    """Show a search page"""
+
+    if "username" not in session:
+        flash("You're not logged in! Showing limited features", "info")
+    
+    return render_template('search.html')
