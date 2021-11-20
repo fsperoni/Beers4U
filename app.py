@@ -26,8 +26,8 @@ def handle_not_found(event):
 @app.route('/')
 def show_home():
     """Show home page"""
-    if "username" not in session:
-        return redirect('/login')
+    if "username" in session:
+        return redirect('/dashboard')
     return render_template("home.html")
 
 ################################################################
@@ -39,7 +39,8 @@ def register_user():
         Show a form that when submitted will register/create a user.
         Process the registration form by adding a new user. 
     """
-
+    if "username" in session:
+        return redirect('/dashboard')
     form = UserCreateForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -67,12 +68,11 @@ def login_user():
     """
         Show a form that when submitted will login a user. 
         Process the login form, ensuring the user is authenticated and 
-        redirecting to search page if so.
+        redirecting to dashboard page if so.
     """
 
     if "username" in session:
-        flash(f"You are currently logged in as {session['username']}", "info")
-        return render_template("home.html")
+        return redirect('/dashboard')
     form = UserLoginForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -82,32 +82,32 @@ def login_user():
         if user:
             session['username'] = user.username
             flash(f"Welcome Back, {user.full_name}!", "primary")
-            return render_template("show_user.html", user=user)
+            return render_template("dashboard.html", user=user)
         else:
             form.username.errors = ['Invalid username/password.']
 
     return render_template('login.html', form=form)
 
-@app.route('/users/<username>')
-def show_user(username):
+@app.route('/users/<int:id>')
+def show_user(id):
     """Display user profile."""
     
     if "username" not in session:
         form = UserLoginForm()
         flash("Please login first!", "danger")
         return render_template('login.html', form=form)
-    user = User.query.get_or_404(username)
+    user = User.query.get_or_404(id)
     return render_template("show_user.html", user=user)
 
-@app.route('/users/<username>/delete', methods=['POST'])
-def delete_user(username):
+@app.route('/users/<int:id>/delete', methods=['POST'])
+def delete_user(id):
     """Remove the user from the database"""
 
     form = UserLoginForm()
     if "username" not in session:
         flash("Please login first!", "danger")
     else:
-        user = User.query.get_or_404(username)
+        user = User.query.get_or_404(id)
         if session['username'] == user.username:
             db.session.delete(user)
             db.session.commit()
@@ -115,22 +115,23 @@ def delete_user(username):
             flash("Account deleted!", "success")
         else:
             flash("You can only delete your own account.", "danger")
+            return render_template("show_user.html", user=user)
     return render_template('login.html', form=form)
 
-@app.route('/users/<username>/edit', methods=['GET', 'POST'])
-def edit_user(username):
+@app.route('/users/<int:id>/edit', methods=['GET', 'POST'])
+def edit_user(id):
     """Edit the user in the database"""
 
     if "username" not in session:
         form = UserLoginForm()
         flash("Please login first!", "danger")
         return render_template('login.html', form=form)
-    user = User.query.get_or_404(username)
+    user = User.query.get_or_404(id)
     form = UserEditForm(obj=user)
     if form.validate_on_submit():
         if session['username'] != user.username:
             flash("You can only update your own profile.", "danger")
-            return redirect(f'/users/{user.username}')
+            return render_template("show_user.html", user=user)
         user.email = form.email.data
         user.first_name = form.first_name.data
         user.last_name = form.last_name.data
@@ -139,22 +140,23 @@ def edit_user(username):
         flash("Profile updated!", "success")
         return render_template("show_user.html", user=user)
     else:
-        return render_template("edit_user.html", form=form)
+        return render_template("edit_user.html", form=form, user=user)
 
 @app.route('/logout')
 def user_logout():
     """ Clear any information from the session and redirect to /login """
 
     session.pop('username')
-    form = UserLoginForm()
     flash("Goodbye!", "info")
-    return render_template('login.html', form=form)
+    return render_template('home.html')
 
-@app.route('/search')
-def show_search_page():
-    """Show a search page"""
+@app.route('/dashboard')
+def show_dashboard():
+    """Show a dashboard page"""
 
     if "username" not in session:
         flash("You're not logged in! Showing limited features", "info")
+        return render_template('dashboard.html')
     
-    return render_template('search.html')
+    user = User.query.filter(User.username == session["username"]).first()
+    return render_template('dashboard.html', user=user)

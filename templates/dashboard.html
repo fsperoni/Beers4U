@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 class="display-1">Under Construction</h1>
+
+{% if user %}
+<p>{{ user.username }}</p>
+<p>{{ user.email }}</p>
+<p>{{user.full_name }}</p>
+{% endif %}
+
+{% endblock %}

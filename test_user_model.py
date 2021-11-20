@@ -48,7 +48,7 @@ class UserModelTestCase(TestCase):
         db.session.rollback()
         return res
 
-
+    # User Tests
     def test_user_model(self):
         """Does basic model work?"""
 
@@ -97,7 +97,7 @@ class UserModelTestCase(TestCase):
         with self.assertRaises(IntegrityError) as context:
             db.session.commit()
 
-    def test_invalid_email_signup(self):
+    def test_invalid_email_register(self):
         invalid = User.register("test3test", "password", None, "User1", "Test1")
         uid = 123789
         invalid.id = uid
@@ -105,14 +105,14 @@ class UserModelTestCase(TestCase):
         with self.assertRaises(IntegrityError) as context:
             db.session.commit()
     
-    def test_invalid_password_signup(self):
+    def test_invalid_password_register(self):
         with self.assertRaises(ValueError) as context:
             User.register("testtest3", "", "email@email.com", "User1", "Test1")
         
         with self.assertRaises(ValueError) as context:
             User.register("test1test", None, "email1@email.com", "User1", "Test1")
     
-    def test_invalid_first_name_signup(self):
+    def test_invalid_first_name_register(self):
         invalid = User.register("test2test", "password", "email2@email.com", None, "Test1")
         uid = 789
         invalid.id = uid
@@ -120,7 +120,7 @@ class UserModelTestCase(TestCase):
         with self.assertRaises(IntegrityError) as context:
             db.session.commit()
     
-    def test_invalid_last_name_signup(self):
+    def test_invalid_last_name_register(self):
         invalid = User.register("testtest4", "password", "email3@email.com", "User1", None)
         uid = 456
         invalid.id = uid
