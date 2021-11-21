@@ -1,9 +1,10 @@
 """Flask app for Feedback"""
-from flask import Flask, render_template, redirect, session, flash
+from flask import Flask, render_template, redirect, session, flash, jsonify
 from models import db, connect_db, User, Feedback, Favorite
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import UserCreateForm, UserLoginForm, UserEditForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
+import requests
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///beers4u'
@@ -16,6 +17,8 @@ connect_db(app)
 db.create_all()
 
 toolbar = DebugToolbarExtension(app)
+
+BASE_URL = 'https://api.punkapi.com/v2'
 
 @app.errorhandler(404)
 def handle_not_found(event):
@@ -160,3 +163,29 @@ def show_dashboard():
     
     user = User.query.filter(User.username == session["username"]).first()
     return render_template('dashboard.html', user=user)
+
+################################################################
+# Search routes
+
+@app.route('/random')
+def show_random_beer():
+    """Get random beer recipe from API"""
+
+    response = requests.get(f"{BASE_URL}/beers/random")
+    recipes = response.json()
+    # add generic image if needed
+    for recipe in recipes:
+        if not recipe['image_url']:
+            recipe.update({'image_url': "/static/generic_beer.png"}) 
+
+    return render_template('recipes.html', recipes=recipes)
+
+# @app.route('/search/recipes')
+# def show_recipes():
+#     """Search and show recipes based on search criteria"""
+# @app.route('/search/foods')
+# def show_foods():
+#     """Search and show food pairings based on search criteria"""
+# @app.route('/search/beers')
+# def show_beers():
+#     """Search and show beer pairings based on search criteria"""

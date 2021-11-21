@@ -9,4 +9,63 @@
 <p>{{user.full_name }}</p>
 {% endif %}
 
+<h1>Let's search for some beer recipes!</h1>
+<p><small>Fill one or more fields below to make a search:</small></p>
+
+<div class="accordion" id="searchAccordion">
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="brewerHeader">
+      <button class="accordion-button fs-5 collapsed" type="button" data-bs-toggle="collapse" 
+        data-bs-target="#brewerDiv" aria-expanded="true" aria-controls="brewerDiv">
+        I am a home brewer exploring beer recipes
+      </button>
+    </h2>
+    <div id="brewerDiv" class="accordion-collapse collapse" 
+      aria-labelledby="brewerHeader" data-bs-parent="#searchAccordion">
+      <div class="accordion-body">
+        <span>Display form to search for beer recipes based on filters entered</span>
+        <p>Want to try something different? Let us surprise you with a 
+          <a class="link-success" href="/random">beer recipe</a>.</p>
+        <form action="/search/recipes">
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="foodHeader">
+      <button class="accordion-button fs-5 collapsed" type="button" data-bs-toggle="collapse" 
+        data-bs-target="#foodDiv" aria-expanded="false" aria-controls="foodDiv">
+        I am looking for food pairing based on beers
+      </button>
+    </h2>
+    <div id="foodDiv" class="accordion-collapse collapse" 
+      aria-labelledby="foodHeader" data-bs-parent="#searchAccordion">
+      <div class="accordion-body">
+        <span>Display form to search for food pairing based on beer info</span>
+        <form action="/search/foods">
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="beerHeader">
+      <button class="accordion-button fs-5 collapsed" type="button" data-bs-toggle="collapse" 
+        data-bs-target="#beerDiv" aria-expanded="false" aria-controls="beerDiv">
+        I am looking for beer pairing based on foods
+      </button>
+    </h2>
+    <div id="beerDiv" class="accordion-collapse collapse" 
+      aria-labelledby="beerHeader" data-bs-parent="#searchAccordion">
+      <div class="accordion-body">
+        <span>Display form to search for beer pairing based on food info</span>
+        <form action="/search/beers">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
