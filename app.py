@@ -1,9 +1,10 @@
 """Flask app for Feedback"""
-from flask import Flask, render_template, redirect, session, flash, jsonify
+from flask import Flask, render_template, redirect, session, flash, request
 from models import db, connect_db, User, Feedback, Favorite
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import UserCreateForm, UserLoginForm, UserEditForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
+from helpers import add_image
 import requests
 
 app = Flask(__name__)
@@ -172,20 +173,36 @@ def show_random_beer():
     """Get random beer recipe from API"""
 
     response = requests.get(f"{BASE_URL}/beers/random")
-    recipes = response.json()
-    # add generic image if needed
-    for recipe in recipes:
-        if not recipe['image_url']:
-            recipe.update({'image_url': "/static/generic_beer.png"}) 
+    recipes = add_image(response.json()) 
 
     return render_template('recipes.html', recipes=recipes)
 
-# @app.route('/search/recipes')
+@app.route('/search/beers', methods=["POST"])
+def show_foods():
+    """Search and show beer pairings based on search criteria"""
+
+    criteria = request.form["foodInput"].strip().replace(' ', '_')
+    response = requests.get(f"{BASE_URL}/beers?food={criteria}")
+    beers = add_image(response.json())
+    if len(beers) == 0:
+        flash("No beers found for your search criteria. Please try again.", "warning")
+        return render_template('dashboard.html')
+    else: 
+        return render_template('pairing.html', beers=beers)
+
+@app.route('/search/foods', methods=["POST"])
+def show_beers():
+    """Search and show food pairings based on search criteria"""
+
+    criteria = request.form["beerInput"].strip().replace(' ', '_')
+    response = requests.get(f"{BASE_URL}/beers?beer_name={criteria}")
+    beers = add_image(response.json())
+    if len(beers) == 0:
+        flash("No beers found for your search criteria. Please try again.", "warning")
+        return render_template('dashboard.html')
+    else: 
+        return render_template('pairing.html', beers=beers)
+
+# @app.route('/search/recipes', methods=["POST"])
 # def show_recipes():
 #     """Search and show recipes based on search criteria"""
-# @app.route('/search/foods')
-# def show_foods():
-#     """Search and show food pairings based on search criteria"""
-# @app.route('/search/beers')
-# def show_beers():
-#     """Search and show beer pairings based on search criteria"""

@@ -1,18 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1 class="display-1">Under Construction</h1>
+<h1 class="display-5">What are you looking for today?</h1>
 
-{% if user %}
-<p>{{ user.username }}</p>
-<p>{{ user.email }}</p>
-<p>{{user.full_name }}</p>
-{% endif %}
-
-<h1>Let's search for some beer recipes!</h1>
-<p><small>Fill one or more fields below to make a search:</small></p>
-
-<div class="accordion" id="searchAccordion">
+<div class="accordion mt-3" id="searchAccordion">
   
   <div class="accordion-item">
     <h2 class="accordion-header" id="brewerHeader">
@@ -43,8 +34,16 @@
     <div id="foodDiv" class="accordion-collapse collapse" 
       aria-labelledby="foodHeader" data-bs-parent="#searchAccordion">
       <div class="accordion-body">
-        <span>Display form to search for food pairing based on beer info</span>
-        <form action="/search/foods">
+        <span>For best results, separate words with space only, no commas or periods.</span>
+        <form action="/search/foods" method="POST">
+          <div class="mb-3">
+            <label for="beerInput" class="form-label">Beer Information:</label>
+            <input type="text" class="form-control" id="beerInput" 
+              name="beerInput" placeholder="Enter keywords for your search here.">
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
         </form>
       </div>
     </div>
@@ -60,8 +59,16 @@
     <div id="beerDiv" class="accordion-collapse collapse" 
       aria-labelledby="beerHeader" data-bs-parent="#searchAccordion">
       <div class="accordion-body">
-        <span>Display form to search for beer pairing based on food info</span>
-        <form action="/search/beers">
+        <span>For best results, separate words with space only, no commas or periods.</span>
+        <form action="/search/beers" method="POST">
+          <div class="mb-3">
+            <label for="foodInput" class="form-label">Food Information:</label>
+            <input type="text" class="form-control" id="foodInput" 
+              name="foodInput" placeholder="Enter keywords for your search here.">
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary">Search</button>
+          </div>
         </form>
       </div>
     </div>
