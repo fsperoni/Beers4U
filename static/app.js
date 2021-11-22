@@ -21,8 +21,6 @@ const checkRecipeInput = (e) => {
   inputIds.each(function() {
     if ($(this).val().trim() !== '') {
       isDisabled = false
-      console.log(isDisabled)
-      console.log($(this).val().trim())
       return false
     }
   })
@@ -44,7 +42,43 @@ const clearForm = (e) => {
 }
 $('#clearBtn').on('click', clearForm)
 
+/** Validate the recipe search form */
+async function validateForm(e) {
+  e.preventDefault()
+  $("p").remove(".error")
+  let hasErrors = false
+  const form = document.getElementById('recipeForm')
+  const formData = new FormData(form)
+  if (parseInt(formData.get('abv_gt')) > parseInt(formData.get('abv_lt'))) {
+    const msg = $('<p>').addClass('error').html('<small class="text-danger">Check this entry.</small>')
+    $('#formABV').append(msg)
+    hasErrors = true
+  }
+  if (parseInt(formData.get('ibu_gt')) > parseInt(formData.get('ibu_lt'))) {
+    const msg = $('<p>').addClass('error').html('<small class="text-danger">Check this entry.</small>')
+    $('#formIBU').append(msg)
+    hasErrors = true
+  }
+  if (parseInt(formData.get('ebc_gt')) > parseInt(formData.get('ebc_lt'))) {
+    const msg = $('<p>').addClass('error').html('<small class="text-danger">Check this entry.</small>')
+    $('#formEBC').append(msg)
+    hasErrors = true
+  }
+  if (!hasErrors) {
+    const response = await axios({
+      method: 'POST',
+      url: '/search/recipes',
+      data: formData
+    })
+    if (response.status === 200) {
+      clearForm()
+    }
+  }
 
+}
+$('#recipeForm').on('submit', validateForm)
+
+/** Send the recipe search form data to the server */
 //Get the button:
 const scrollButton = document.getElementById("scrollBtn")
 
@@ -63,3 +97,4 @@ function toggleShowButton() {
 function scrollToTop() {
   document.documentElement.scrollTop = 0 
 }
+

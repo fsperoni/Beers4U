@@ -203,6 +203,22 @@ def show_beers():
     else: 
         return render_template('pairing.html', beers=beers)
 
-# @app.route('/search/recipes', methods=["POST"])
-# def show_recipes():
-#     """Search and show recipes based on search criteria"""
+@app.route('/search/recipes', methods=["POST"])
+def show_recipes():
+    """Search and show recipes based on search criteria"""
+    
+    criteria_list = [[name, value] for name, value in request.form.items() if request.form[name] ]
+    criteria = '?'
+    for item in criteria_list:
+        criteria += f"{item[0]}={item[1]}&"
+    l = len(criteria)
+    criteria = criteria[:l-1] #remove extra "&"
+    response = requests.get(f"{BASE_URL}/beers{criteria}")
+    recipes = add_image(response.json())
+    if len(recipes) == 0:
+        flash("No beers found for your search criteria. Please try again.", "warning")
+        return render_template('dashboard.html')
+    else: 
+        return render_template('recipes.html', recipes=recipes)
+
+    

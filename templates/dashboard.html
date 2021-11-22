@@ -15,67 +15,66 @@
     <div id="brewerDiv" class="accordion-collapse collapse" 
       aria-labelledby="brewerHeader" data-bs-parent="#searchAccordion">
       <div class="accordion-body">
-        <span>Display form to search for beer recipes based on filters entered</span>
         <p>Want to try something different? Let us surprise you with a 
           <a class="link-success" href="/random">beer recipe</a>.</p>
-        <form id="recipeForm" class="row g-3" action="/search/recipes" method="POST">
-          <div class="col-lg-2 col-md-4">
-            <label for="abvFrom" class="form-label">ABV between:</label>
+        <form id="recipeForm" class="row mt-3 g-3" action="/search/recipes" method="POST">
+          <div id="formABV" class="col-lg-2 col-md-4">
+            <label for="abv_gt" class="form-label">ABV between:</label>
             <input type="number" min="0" max="100" step="1" aria-label="ABV from"
-              class="form-control recipe" id="abvFrom" name="abvFrom" placeholder="0">
+              class="form-control recipe" id="abv_gt" name="abv_gt" placeholder="0">
             <span class="input-group-text">and</span>
             <input type="number" min="0" max="100" step="1" aria-label="ABV to"
-              class="form-control recipe" id="abvTo" name="abvTo" placeholder="100">
+              class="form-control recipe" id="abv_lt" name="abv_lt" placeholder="100">
           </div>
-          <div class="col-lg-2 col-md-4">
-            <label for="ibuFrom" class="form-label">IBU between:</label>
+          <div id="formIBU" class="col-lg-2 col-md-4">
+            <label for="ibu_gt" class="form-label">IBU between:</label>
             <input type="number" min="0" max="1200" step="1" aria-label="IBU from"
-              class="form-control recipe" id="ibuFrom" name="ibuFrom" placeholder="0">
+              class="form-control recipe" id="ibu_gt" name="ibu_gt" placeholder="0">
             <span class="input-group-text">and</span>
             <input type="number" min="0" max="1200" step="1" aria-label="IBU to"
-              class="form-control recipe" id="ibuTo" name="ibuTo" placeholder="100">
+              class="form-control recipe" id="ibu_lt" name="ibu_lt" placeholder="1200">
           </div>
-          <div class="col-lg-2 col-md-4">
-            <label for="ebcFrom" class="form-label">EBC between:</label>
+          <div id="formEBC" class="col-lg-2 col-md-4">
+            <label for="ebc_gt" class="form-label">EBC between:</label>
             <input type="number" min="0" max="600" step="1" aria-label="EBC from"
-              class="form-control recipe" id="ebcFrom" name="ebcFrom" placeholder="0">
+              class="form-control recipe" id="ebc_gt" name="ebc_gt" placeholder="0">
             <span class="input-group-text">and</span>
             <input type="number" min="1" max="600" step="1" aria-label="EBC to"
-              class="form-control recipe" id="ebcTo" name="ebcTo" placeholder="600">
+              class="form-control recipe" id="ebc_lt" name="ebc_lt" placeholder="600">
           </div>
-          <div class="col-lg-2 col-md-4">
-            <label for="maltInput" class="form-label">Malt:
+          <div id="formMalt" class="col-lg-2 col-md-4">
+            <label for="malt" class="form-label">Malt:
               <i class="far fa-question-circle" data-bs-toggle="tooltip" 
                 data-bs-placement="top" title="Separate words with space only, no commas or periods.">
               </i>
             </label>
             <textarea type="text" aria-label="Malt" class="form-control recipe" 
-              id="maltInput" name="maltInput"></textarea>
+              id="malt" name="malt"></textarea>
           </div>
-          <div class="col-lg-2 col-md-4">
-            <label for="hopsInput" class="form-label">Hops:
+          <div id="formHops" class="col-lg-2 col-md-4">
+            <label for="hops" class="form-label">Hops:
               <i class="far fa-question-circle" data-bs-toggle="tooltip" 
                 data-bs-placement="top" title="Separate words with space only, no commas or periods.">
               </i>
             </label>
             <textarea type="text" aria-label="Hops" class="form-control recipe" 
-              id="hopsInput" name="hopsInput"></textarea>
+              id="hops" name="hops"></textarea>
           </div>
-          <div class="col-lg-2 col-md-4">
-            <label for="yeastInput" class="form-label">Yeast:
+          <div id="formYeast" class="col-lg-2 col-md-4">
+            <label for="yeast" class="form-label">Yeast:
               <i class="far fa-question-circle" data-bs-toggle="tooltip" 
                 data-bs-placement="top" title="Separate words with space only, no commas or periods.">
               </i>
             </label>
             <textarea type="text" aria-label="Yeast" class="form-control recipe" 
-              id="yeastInput" name="yeastInput"></textarea>
+              id="yeast" name="yeast"></textarea>
           </div>
 
-          <div class="col-12">
-            <button id="recipeBtn" type="submit" disabled class="btn btn-primary">
+          <div class="col-12 mt-5">
+            <button id="recipeBtn" type="submit" disabled class="btn btn-primary float-end">
               Search
             </button>
-            <button id="clearBtn" type="reset" class="btn btn-warning ms-2">
+            <button id="clearBtn" type="reset" class="btn btn-warning float-end me-3">
               Clear
             </button>
           </div>
