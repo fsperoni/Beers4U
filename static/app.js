@@ -35,14 +35,13 @@ const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 })
 
 /** Clear the recipe search form */
-const clearForm = (e) => {
-  e.preventDefault()
-  $('#recipeForm').trigger('reset')
-  $('#recipeBtn').prop('disabled', true)
+const clearForm = () => {
+  $('#recipeForm').trigger('reset');
+  $('#recipeBtn').prop('disabled', true);
 }
 $('#clearBtn').on('click', clearForm)
 
-/** Validate the recipe search form */
+/** Validate the recipe search form and send post request to server */
 async function validateForm(e) {
   e.preventDefault()
   $("p").remove(".error")
@@ -70,15 +69,14 @@ async function validateForm(e) {
       url: '/search/recipes',
       data: formData
     })
+    console.log(response)
     if (response.status === 200) {
       clearForm()
     }
   }
-
 }
 $('#recipeForm').on('submit', validateForm)
 
-/** Send the recipe search form data to the server */
 //Get the button:
 const scrollButton = document.getElementById("scrollBtn")
 
