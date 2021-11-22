@@ -18,7 +18,67 @@
         <span>Display form to search for beer recipes based on filters entered</span>
         <p>Want to try something different? Let us surprise you with a 
           <a class="link-success" href="/random">beer recipe</a>.</p>
-        <form action="/search/recipes">
+        <form id="recipeForm" class="row g-3" action="/search/recipes" method="POST">
+          <div class="col-lg-2 col-md-4">
+            <label for="abvFrom" class="form-label">ABV between:</label>
+            <input type="number" min="0" max="100" step="1" aria-label="ABV from"
+              class="form-control recipe" id="abvFrom" name="abvFrom" placeholder="0">
+            <span class="input-group-text">and</span>
+            <input type="number" min="0" max="100" step="1" aria-label="ABV to"
+              class="form-control recipe" id="abvTo" name="abvTo" placeholder="100">
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <label for="ibuFrom" class="form-label">IBU between:</label>
+            <input type="number" min="0" max="1200" step="1" aria-label="IBU from"
+              class="form-control recipe" id="ibuFrom" name="ibuFrom" placeholder="0">
+            <span class="input-group-text">and</span>
+            <input type="number" min="0" max="1200" step="1" aria-label="IBU to"
+              class="form-control recipe" id="ibuTo" name="ibuTo" placeholder="100">
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <label for="ebcFrom" class="form-label">EBC between:</label>
+            <input type="number" min="0" max="600" step="1" aria-label="EBC from"
+              class="form-control recipe" id="ebcFrom" name="ebcFrom" placeholder="0">
+            <span class="input-group-text">and</span>
+            <input type="number" min="1" max="600" step="1" aria-label="EBC to"
+              class="form-control recipe" id="ebcTo" name="ebcTo" placeholder="600">
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <label for="maltInput" class="form-label">Malt:
+              <i class="far fa-question-circle" data-bs-toggle="tooltip" 
+                data-bs-placement="top" title="Separate words with space only, no commas or periods.">
+              </i>
+            </label>
+            <textarea type="text" aria-label="Malt" class="form-control recipe" 
+              id="maltInput" name="maltInput"></textarea>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <label for="hopsInput" class="form-label">Hops:
+              <i class="far fa-question-circle" data-bs-toggle="tooltip" 
+                data-bs-placement="top" title="Separate words with space only, no commas or periods.">
+              </i>
+            </label>
+            <textarea type="text" aria-label="Hops" class="form-control recipe" 
+              id="hopsInput" name="hopsInput"></textarea>
+          </div>
+          <div class="col-lg-2 col-md-4">
+            <label for="yeastInput" class="form-label">Yeast:
+              <i class="far fa-question-circle" data-bs-toggle="tooltip" 
+                data-bs-placement="top" title="Separate words with space only, no commas or periods.">
+              </i>
+            </label>
+            <textarea type="text" aria-label="Yeast" class="form-control recipe" 
+              id="yeastInput" name="yeastInput"></textarea>
+          </div>
+
+          <div class="col-12">
+            <button id="recipeBtn" type="submit" disabled class="btn btn-primary">
+              Search
+            </button>
+            <button id="clearBtn" type="reset" class="btn btn-warning ms-2">
+              Clear
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -34,15 +94,22 @@
     <div id="foodDiv" class="accordion-collapse collapse" 
       aria-labelledby="foodHeader" data-bs-parent="#searchAccordion">
       <div class="accordion-body">
-        <span>For best results, separate words with space only, no commas or periods.</span>
-        <form action="/search/foods" method="POST">
-          <div class="mb-3">
-            <label for="beerInput" class="form-label">Beer Information:</label>
-            <input type="text" class="form-control" id="beerInput" 
-              name="beerInput" placeholder="Enter keywords for your search here.">
+        <form id="foodForm" class="mt-3" action="/search/foods" method="POST">
+          <div class="row mb-3">
+            <label for="beerInput" class="col-sm-2 col-form-label">Beer Information:
+              <i class="far fa-question-circle" data-bs-toggle="tooltip" 
+                data-bs-placement="top" title="Separate words with space only, no commas or periods.">
+              </i>
+            </label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="beerInput" 
+                name="beerInput" placeholder="Enter keywords for your search here.">
+            </div>
           </div>
           <div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button id="beerBtn" type="submit" disabled class="btn btn-primary">
+              Search
+            </button>
           </div>
         </form>
       </div>
@@ -59,15 +126,20 @@
     <div id="beerDiv" class="accordion-collapse collapse" 
       aria-labelledby="beerHeader" data-bs-parent="#searchAccordion">
       <div class="accordion-body">
-        <span>For best results, separate words with space only, no commas or periods.</span>
-        <form action="/search/beers" method="POST">
+        <form id="beerForm" action="/search/beers" method="POST">
           <div class="mb-3">
-            <label for="foodInput" class="form-label">Food Information:</label>
+            <label for="foodInput" class="form-label">Food Information:
+              <i class="far fa-question-circle" data-bs-toggle="tooltip" 
+                data-bs-placement="top" title="Separate words with space only, no commas or periods.">
+              </i>
+            </label>
             <input type="text" class="form-control" id="foodInput" 
               name="foodInput" placeholder="Enter keywords for your search here.">
           </div>
           <div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button id="foodBtn" type="submit" disabled class="btn btn-primary">
+              Search
+            </button>
           </div>
         </form>
       </div>
