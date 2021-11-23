@@ -69,7 +69,6 @@ async function validateForm(e) {
       url: '/search/recipes',
       data: formData
     })
-    console.log(response)
     if (response.status === 200) {
       clearForm()
     }
@@ -77,22 +76,31 @@ async function validateForm(e) {
 }
 $('#recipeForm').on('submit', validateForm)
 
+/** Toggle favorite icon on pages that display recipes or pairings */
+const toggleFavoriteIcon = () => {
+  $('#favPairBtn').toggleClass("btn-danger")
+  $('#favPairBtn').toggleClass("btn-secondary")
+}
+$('#favPairing').on('submit', toggleFavoriteIcon)
+
+
+
 //Get the button:
-const scrollButton = document.getElementById("scrollBtn")
+// const scrollButton = document.getElementById("scrollBtn")
 
 // window.onscroll = function() {toggleShowButton()}
 
 /** Shows the button only when user scrolls down 20px from the top of the document*/
-function toggleShowButton() {
-  if (document.documentElement.scrollTop > 20) {
-    scrollButton.style.display = "block"
-  } else {
-    scrollButton.style.display = "none"
-  }
-}
+// function toggleShowButton() {
+//   if (document.documentElement.scrollTop > 20) {
+//     scrollButton.style.display = "block"
+//   } else {
+//     scrollButton.style.display = "none"
+//   }
+// }
 
-/**  Scroll to the top of the document */
-function scrollToTop() {
-  document.documentElement.scrollTop = 0 
-}
+// /**  Scroll to the top of the document */
+// function scrollToTop() {
+//   document.documentElement.scrollTop = 0 
+// }
 

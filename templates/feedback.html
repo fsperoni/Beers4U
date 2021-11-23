@@ -1,0 +1,21 @@
+{% extends 'base.html'  %}
+
+{% block content %}
+<h1>Feedback on {{ recipe.name }}:</h1>
+    
+{% include "_recipe.html" %}
+
+<!-- SHOW FEEDBACKS -->
+
+<!-- DISPLAY BUTTONS TO EDIT/DELETE FEEDBACK FOR OWNER ONLY -->
+<h1>Add your feedback:</h1>
+
+<form class="mt-3" action="/recipes/{{ recipe.id }}" method="POST">
+
+{% include "_form.html" %}
+
+  <button class="btn btn-success" type="submit">Submit</button>
+  
+</form>
+
+{% endblock %}

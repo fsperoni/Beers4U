@@ -1,0 +1,87 @@
+<div class="card mt-5">
+    <div class="row g-0">
+      <div class="card-header fs-5"><b class="ms-3">{{ recipe.name }}</b>
+        {% if g.user %}
+        <form class="float-start" id="favRecipe" action="/users/favorites/{{ recipe.id }}" method="POST">
+          <button id="favRecBtn" class="btn btn-sm float-start
+            {{ 'btn-danger' if recipe.id in rec_ids else 'btn-secondary' }}">
+            <i class="fas fa-heart"></i>
+          </button>
+        </form>
+        <form class="float-start ms-3" action="/recipes/{{ recipe.id }}"
+        id="favRecNote">
+        <button id="favRecNoteBtn" class="btn btn-sm btn-info float-start' }}">
+          <i class="fas fa-edit"></i>
+        </button>
+      </form>
+        {% endif %}
+      </div>
+      <div class="col-md-4 text-center">
+        <img src="{{ recipe.image_url }}" class="img-fluid" alt="Beer Image">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">Tags</h5>
+          <p class="card-text">{{ recipe.tagline }}</p>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Description</h5>
+          <p class="card-text">{{ recipe.description }}</p>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">General Info</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Alcohol by volume (ABV): {{ recipe.abv }}</li>
+            <li class="list-group-item">International Bitterness Units (IBU): {{ recipe.ibu }}</li>
+            <li class="list-group-item">Final Gravity: {{ recipe.target_fg }}</li>
+            <li class="list-group-item">Original Gravity: {{ recipe.target_og }}</li>
+            <li class="list-group-item">European Brewery Convention (EBC): {{ recipe.ebc }}</li>
+            <li class="list-group-item">Standard Reference Method (SRM): {{ recipe.srm }}</li>
+            <li class="list-group-item">Attenuation level: {{ recipe.attenuation_level }}</li>
+            <li class="list-group-item">Ph: {{ recipe.ph }}</li>
+          </ul> 
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Ingredients</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><b>Yeast:</b>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{ recipe.ingredients.yeast }}</li>
+              </ul>
+            </li>
+            <li class="list-group-item"><b>Malt:</b>
+              <ul class="list-group list-group-flush">
+                {% for malt in recipe.ingredients.malt %}
+                <li class="list-group-item">{{ malt.name }} - 
+                  {{ malt.amount.value }} {{malt.amount.unit}}
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+            <li class="list-group-item"><b>Hops:</b> 
+              <ul class="list-group list-group-flush">
+                {% for hop in recipe.ingredients.hops %}
+                <li class="list-group-item">{{ hop.name }} - 
+                  {{ hop.amount.value }} {{hop.amount.unit}};
+                   add at {{ hop.add }} for added {{ hop.attribute }}
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul> 
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Brewer's tips</h5>
+          <p class="card-text">{{ recipe.brewers_tips }}</p>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Food Pairing</h5>
+          <ul class="list-group list-group-flush">
+            {% for food in recipe.food_pairing %}
+            <li class="list-group-item">{{ food }}</li>
+            {% endfor %}
+          </ul> 
+        </div>
+      </div>
+    </div>
+  </div>

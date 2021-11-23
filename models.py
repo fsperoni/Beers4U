@@ -1,6 +1,7 @@
 """Models for Feedback app."""
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from datetime import datetime
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -47,6 +48,12 @@ class User(db.Model):
         else:
             return False
     
+    @classmethod
+    def get_fav_rec_ids(cls, id):
+        favs = Favorite.query.filter(Favorite.user_id == id).all()
+        return [fav.recipe_id for fav in favs]
+            
+
     @property
     def full_name(self):
         """Return the full name of the user"""
@@ -61,6 +68,8 @@ class Feedback(db.Model):
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     is_public = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    recipe_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', 
         ondelete='CASCADE'), nullable=False)
 
@@ -71,62 +80,38 @@ class Like(db.Model):
 
     __tablename__ = 'likes' 
 
-    id = db.Column( 
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete='cascade')
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'))
 
-    feedback_id = db.Column(
-        db.Integer,
-        db.ForeignKey('feedbacks.id', ondelete='cascade'),
-        unique=True
-    )
+    feedback_id = db.Column(db.Integer, 
+        db.ForeignKey('feedbacks.id', ondelete='cascade'), unique=True)
 
 class Dislike(db.Model):
     """Mapping user dislikes to Feedbacks."""
 
     __tablename__ = 'dislikes' 
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete='cascade')
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'))
 
-    feedback_id = db.Column(
-        db.Integer,
-        db.ForeignKey('feedbacks.id', ondelete='cascade'),
-        unique=True
-    )
+    feedback_id = db.Column(db.Integer, db.ForeignKey('feedbacks.id', 
+        ondelete='cascade'), unique=True)
 
 class Favorite(db.Model):
     """Flagging beer recipe as favorite."""
 
     __tablename__ = 'favorites'
 
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
+    id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete='cascade')
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'))
 
-    recipe_id = db.Column(
-        db.Integer
-    )
+    recipe_id = db.Column(db.Integer, unique=True)
 
+    def __repr__(self):
+        return f"<Favorite #{self.id}: {self.user_id}, {self.recipe_id}>"
 
 def connect_db(app):
     """Connect to database."""

@@ -19,11 +19,13 @@
         </div>
       </a>
       <ul class="nav navbar-nav flex-row float-right">
-        {% if user %}
+        {% if g.user %}
         <li class="nav-item">
-          <a class="nav-link pr-3 text-light" href="/users/{{ user.id }}">
-            Hi {{ user.username }}!
-          </a>
+          <form action="/users/show" method="POST">
+            <button class="btn btn-dark nav-link pr-3 text-light">
+              <u>Hi {{ g.user.first_name }}!</u>
+            </button>
+          </form>
         </li>
         <li class="nav-item ms-3">
           <a class="nav-link pr-3 text-light" href="/logout">Logout</a>

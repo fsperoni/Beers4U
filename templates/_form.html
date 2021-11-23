@@ -4,7 +4,11 @@
   if field.widget.input_type != 'hidden' %}
 <p>
   {{ field.label }}
-  {{ field(class_="form-control") }}
+  {% if field.widget.input_type == 'checkbox'%}
+    {{field(class_="form-control form-check-input")}}
+  {% else %}
+    {{field(class_="form-control")}}
+  {% endif %}
 
   {% for error in field.errors %}
   <span class="form-text text-danger">{{ error }}</span>

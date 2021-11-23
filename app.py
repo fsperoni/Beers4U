@@ -1,10 +1,10 @@
 """Flask app for Feedback"""
-from flask import Flask, render_template, redirect, session, flash, request
+from flask import Flask, render_template, redirect, session, flash, request, g
 from models import db, connect_db, User, Feedback, Favorite
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import UserCreateForm, UserLoginForm, UserEditForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
-from helpers import add_image
+from helpers import add_image, get_id_query_string, get_recipe_query_string
 import requests
 
 app = Flask(__name__)
@@ -20,6 +20,31 @@ db.create_all()
 toolbar = DebugToolbarExtension(app)
 
 BASE_URL = 'https://api.punkapi.com/v2'
+CURR_USER = 'current_user'
+
+@app.before_request
+def add_user_to_g():
+    """If logged in, add curr user to Flask global."""
+
+    if CURR_USER in session:
+        g.user = User.query.get(session[CURR_USER])
+
+    else:
+        g.user = None
+
+
+def do_login(user):
+    """Log in user."""
+
+    session[CURR_USER] = user.id
+
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER in session:
+        del session[CURR_USER] 
+
 
 @app.errorhandler(404)
 def handle_not_found(event):
@@ -30,7 +55,7 @@ def handle_not_found(event):
 @app.route('/')
 def show_home():
     """Show home page"""
-    if "username" in session:
+    if g.user:
         return redirect('/dashboard')
     return render_template("home.html")
 
@@ -43,7 +68,7 @@ def register_user():
         Show a form that when submitted will register/create a user.
         Process the registration form by adding a new user. 
     """
-    if "username" in session:
+    if g.user:
         return redirect('/dashboard')
     form = UserCreateForm()
     if form.validate_on_submit():
@@ -60,9 +85,9 @@ def register_user():
         except IntegrityError:
             form.username.errors.append('Username already in use. Try again.')
             return render_template('register.html', form=form)
-        session['username'] = new_user.username
+        do_login(new_user)
         flash('Welcome! Successfully Created Your Account!', "success")
-        return render_template("show_user.html", user=new_user)
+        return render_template("show_user.html")
     else:
         return render_template('register.html', form=form)
 
@@ -75,7 +100,7 @@ def login_user():
         redirecting to dashboard page if so.
     """
 
-    if "username" in session:
+    if g.user:
         return redirect('/dashboard')
     form = UserLoginForm()
     if form.validate_on_submit():
@@ -84,73 +109,74 @@ def login_user():
 
         user = User.authenticate(username, password)
         if user:
-            session['username'] = user.username
-            flash(f"Welcome Back, {user.full_name}!", "primary")
-            return render_template("dashboard.html", user=user)
+            do_login(user)
+            flash(f"Welcome back {user.full_name}!", "primary")
+            return render_template("dashboard.html")
         else:
             form.username.errors = ['Invalid username/password.']
 
     return render_template('login.html', form=form)
 
-@app.route('/users/<int:id>')
-def show_user(id):
+@app.route('/users/show', methods=["POST"])
+def show_user():
     """Display user profile."""
     
-    if "username" not in session:
+    if not g.user:
         form = UserLoginForm()
         flash("Please login first!", "danger")
         return render_template('login.html', form=form)
-    user = User.query.get_or_404(id)
-    return render_template("show_user.html", user=user)
+    fav_rec_ids = User.get_fav_rec_ids(g.user.id)
+    fav_string = get_id_query_string(fav_rec_ids)
+    if (len(fav_string) > 0):
+        response = requests.get(f"{BASE_URL}/beers{fav_string}")
+        favorites = add_image(response.json())
+        return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids)
+    return render_template('show_user.html')
 
-@app.route('/users/<int:id>/delete', methods=['POST'])
-def delete_user(id):
+@app.route('/users/delete', methods=['POST'])
+def delete_user():
     """Remove the user from the database"""
 
     form = UserLoginForm()
-    if "username" not in session:
+    if not g.user:
         flash("Please login first!", "danger")
     else:
-        user = User.query.get_or_404(id)
-        if session['username'] == user.username:
-            db.session.delete(user)
-            db.session.commit()
-            session.pop('username')
-            flash("Account deleted!", "success")
-        else:
-            flash("You can only delete your own account.", "danger")
-            return render_template("show_user.html", user=user)
+        do_logout()
+        db.session.delete(g.user)
+        db.session.commit()
+        flash("Account deleted!", "success")
     return render_template('login.html', form=form)
 
-@app.route('/users/<int:id>/edit', methods=['GET', 'POST'])
-def edit_user(id):
+@app.route('/users/edit', methods=['GET', 'POST'])
+def edit_user():
     """Edit the user in the database"""
 
-    if "username" not in session:
+    if not g.user:
         form = UserLoginForm()
         flash("Please login first!", "danger")
         return render_template('login.html', form=form)
-    user = User.query.get_or_404(id)
-    form = UserEditForm(obj=user)
+    form = UserEditForm(obj=g.user)
     if form.validate_on_submit():
-        if session['username'] != user.username:
-            flash("You can only update your own profile.", "danger")
-            return render_template("show_user.html", user=user)
-        user.email = form.email.data
-        user.first_name = form.first_name.data
-        user.last_name = form.last_name.data
-        db.session.add(user)
+        g.user.email = form.email.data
+        g.user.first_name = form.first_name.data
+        g.user.last_name = form.last_name.data
         db.session.commit()
         flash("Profile updated!", "success")
-        return render_template("show_user.html", user=user)
+        fav_rec_ids = User.get_fav_rec_ids(g.user.id)
+        fav_string = get_id_query_string(fav_rec_ids)
+        if (len(fav_string) > 0):
+            response = requests.get(f"{BASE_URL}/beers{fav_string}")
+            favorites = add_image(response.json())
+            return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids)
+        return render_template('show_user.html')
     else:
-        return render_template("edit_user.html", form=form, user=user)
+        return render_template("edit_user.html", form=form)
 
 @app.route('/logout')
 def user_logout():
     """ Clear any information from the session and redirect to /login """
 
-    session.pop('username')
+    do_logout()
     flash("Goodbye!", "info")
     return render_template('home.html')
 
@@ -158,12 +184,10 @@ def user_logout():
 def show_dashboard():
     """Show a dashboard page"""
 
-    if "username" not in session:
+    if not g.user:
         flash("You're not logged in! Showing limited features", "info")
-        return render_template('dashboard.html')
     
-    user = User.query.filter(User.username == session["username"]).first()
-    return render_template('dashboard.html', user=user)
+    return render_template('dashboard.html')
 
 ################################################################
 # Search routes
@@ -188,6 +212,9 @@ def show_foods():
         flash("No beers found for your search criteria. Please try again.", "warning")
         return render_template('dashboard.html')
     else: 
+        rec_ids = User.get_fav_rec_ids(g.user.id)
+        if (len(rec_ids) > 0):
+            return render_template('pairing.html', beers=beers, rec_ids=rec_ids)
         return render_template('pairing.html', beers=beers)
 
 @app.route('/search/foods', methods=["POST"])
@@ -201,24 +228,96 @@ def show_beers():
         flash("No beers found for your search criteria. Please try again.", "warning")
         return render_template('dashboard.html')
     else: 
+        rec_ids = User.get_fav_rec_ids(g.user.id)
+        if (len(rec_ids) > 0):
+            return render_template('pairing.html', beers=beers, rec_ids=rec_ids)
         return render_template('pairing.html', beers=beers)
+
 
 @app.route('/search/recipes', methods=["POST"])
 def show_recipes():
     """Search and show recipes based on search criteria"""
     
-    criteria_list = [[name, value] for name, value in request.form.items() if request.form[name] ]
-    criteria = '?'
-    for item in criteria_list:
-        criteria += f"{item[0]}={item[1]}&"
-    l = len(criteria)
-    criteria = criteria[:l-1] #remove extra "&"
+    criteria_list = [[name, value] for name, value in request.form.items() if request.form[name]]
+    criteria = get_recipe_query_string(criteria_list)
     response = requests.get(f"{BASE_URL}/beers{criteria}")
     recipes = add_image(response.json())
     if len(recipes) == 0:
         flash("No beers found for your search criteria. Please try again.", "warning")
         return render_template('dashboard.html')
     else: 
+        rec_ids = User.get_fav_rec_ids(g.user.id)
+        if (len(rec_ids) > 0):
+            return render_template('recipes.html', recipes=recipes, rec_ids=rec_ids)
         return render_template('recipes.html', recipes=recipes)
 
+
+################################################################
+# Favorite routes
+
+@app.route('/users/favorites/<int:rec_id>', methods=['POST'])
+def toggle_favorite(rec_id):
+    """Toggle favoriting a recipe."""
+
+    if not g.user:
+        form = UserLoginForm()
+        flash("Please login first!", "danger")
+        return render_template('login.html', form=form)
+    fav = Favorite.query.filter(Favorite.user_id == g.user.id, Favorite.recipe_id == rec_id).first()
+    if fav:
+        db.session.delete(fav)
+        flash("Recipe deleted from your favorites", "info")
+    else: 
+        flash("Recipe added to your favorites", "success")
+        new_fav = Favorite(user_id=g.user.id, recipe_id=rec_id)
+        db.session.add(new_fav)
+    db.session.commit()
     
+    rec_ids = User.get_fav_rec_ids(g.user.id)
+    fav_string = get_id_query_string(rec_ids)
+    if (len(fav_string) > 0):
+        response = requests.get(f"{BASE_URL}/beers{fav_string}")
+        favorites = add_image(response.json())
+        return render_template('show_user.html', favorites=favorites, rec_ids=rec_ids)
+    return render_template('show_user.html')
+
+
+################################################################
+# Feedback routes
+
+@app.route('/recipes/<int:rec_id>', methods=['GET','POST'])
+def show_recipes_comments(rec_id):
+    """Show feedback made on recipes."""
+
+    if not g.user:
+        form = UserLoginForm()
+        flash("Please login first!", "danger")
+        return render_template('login.html', form=form)
+    
+    form = FeedbackForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+        is_public = form.is_public.data
+        recipe_id = rec_id
+        user_id = g.user.id
+        new_feedback= Feedback(title=title, content=content, recipe_id=recipe_id, 
+            is_public=is_public, user_id=user_id)
+
+        db.session.add(new_feedback)
+        db.session.commit()
+        flash('Feedback processed successfully!', "success")
+    response = requests.get(f"{BASE_URL}/beers?ids={rec_id}")
+    recipe = add_image(response.json())
+    feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).all()
+    rec_ids = User.get_fav_rec_ids(g.user.id)
+    if recipe and feedbacks:
+        return render_template('feedback.html', form=form, rec_ids=rec_ids,
+            feedbacks=feedbacks, recipe=recipe[0])
+    elif recipe:
+        flash(f"No feedback found for {recipe[0].get('name')}", "info")
+        return render_template('feedback.html', form=form, rec_ids=rec_ids, 
+            recipe=recipe[0])
+    else: 
+        flash("Beer recipe not found.")
+        return render_template('dashbarod.html')

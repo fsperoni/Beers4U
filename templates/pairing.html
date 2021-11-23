@@ -4,32 +4,8 @@
 <h1>Please find our suggestion(s) for you:</h1>
 
 {% for beer in beers %}
-    <div class="card mt-5">
-      <div class="row g-0">
-        <div class="card-header fs-5"><b>{{ beer.name }}</b></div>
-        <div class="col-md-4 text-center">
-          <img src="{{ beer.image_url }}" class="img-fluid" alt="Beer Image">
-        </div>
-        <div class="col-md-8">
-          <div class="card-body">
-            <h5 class="card-title">Tags</h5>
-            <p class="card-text">{{ beer.tagline }}</p>
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">Description</h5>
-            <p class="card-text">{{ beer.description }}</p>
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">Food Pairing</h5>
-            <ul class="list-group list-group-flush">
-              {% for food in beer.food_pairing %}
-              <li class="list-group-item">{{ food }}</li>
-              {% endfor %}
-            </ul> 
-          </div>
-        </div>
-      </div>
-    </div>
+
+{% include "_recipe_simple.html" %}
   
 {% endfor %}
 

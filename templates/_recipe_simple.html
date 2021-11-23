@@ -1,0 +1,42 @@
+<div class="card mt-5">
+  <div class="row g-0">
+    <div class="card-header fs-5"><b class="ms-3">{{ beer.name }}</b>
+      {% if g.user %}
+      <form class="float-start" action="/users/favorites/{{ beer.id }}"
+        id="favPairing" method="POST">
+        <button id="favPairBtn" class="btn btn-sm 
+          {{ 'btn-danger' if beer.id in rec_ids else 'btn-secondary' }}">
+          <i class="fas fa-heart"></i>
+        </button>
+      </form>
+      <form class="float-start ms-3" action="/recipes/{{ beer.id }}"
+        id="favPairNote">
+        <button id="favPairNoteBtn" class="btn btn-sm btn-info float-start' }}">
+          <i class="fas fa-edit"></i>
+        </button>
+      </form>
+      {% endif %}
+    </div>
+    <div class="col-md-4 text-center">
+      <img src="{{ beer.image_url }}" class="img-fluid" alt="Beer Image">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">Tags</h5>
+        <p class="card-text">{{ beer.tagline }}</p>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Description</h5>
+        <p class="card-text">{{ beer.description }}</p>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">Food Pairing</h5>
+        <ul class="list-group list-group-flush">
+          {% for food in beer.food_pairing %}
+          <li class="list-group-item">{{ food }}</li>
+          {% endfor %}
+        </ul> 
+      </div>
+    </div>
+  </div>
+</div>

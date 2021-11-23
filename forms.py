@@ -40,7 +40,7 @@ class UserEditForm(FlaskForm):
             Length(min=2, max=30, message="Must be 2-30 characters long")])
 
 class FeedbackForm(FlaskForm):
-    """Form for user feedback."""
+    """Form to add/edit feedback on a recipe."""
     title = StringField("Title", validators=[
             InputRequired(message="Title can't be blank"),
             Length(max=100, message="Must be less than 100 characters long")])

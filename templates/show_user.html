@@ -2,15 +2,24 @@
 
 {% block content %}
 <h1 class="display-4">Your Profile</h1>
-<p>Username: {{ user.username }}</p>
-<p>Email: {{ user.email }}</p>
-<p>First Name: {{ user.first_name }}</p>
-<p>Last Name: {{ user.last_name }}</p>
-{% if session['username'] == user.username %}
-<form class="mt-3" style="display:inline;" action="/users/{{ user.username }}/delete" method="POST">
+<p>Username: {{ g.user.username }}</p>
+<p>Email: {{ g.user.email }}</p>
+<p>First Name: {{ g.user.first_name }}</p>
+<p>Last Name: {{ g.user.last_name }}</p>
+
+<form class="mt-3" style="display:inline;" action="/users/delete" method="POST">
   <button class="btn me-2 btn-danger">Delete Account</button>
-  <a href='/users/{{ user.username }}/edit' class="btn btn-info">Edit Profile</a>
+  <a href='/users/edit' class="btn btn-info">Edit Profile</a>
 </form>
+
+{% if g.user.favorites %} 
+<h1 class="display-4">Your Favorite Beers:</h1>
+{% for recipe in favorites %}
+
+{% include "_recipe.html" %}
+     
+{% endfor %}
+
 {% endif %}
 
 {% endblock %}

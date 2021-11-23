@@ -1,12 +1,10 @@
 {% extends 'base.html'  %}
 
 {% block content %}
-<h1>Please find our suggestion(s) for you:</h1>
-
-{% for recipe in recipes %}
+<h1>Edit your feedback on {{ recipe.name }}:</h1>
     
 {% include "_recipe.html" %}
-  
-{% endfor %}
+
+{% include "_form.html" %}
 
 {% endblock %}
