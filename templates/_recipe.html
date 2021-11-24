@@ -9,11 +9,14 @@
             <i class="fas fa-heart"></i>
           </button>
         </form>
+        <!-- Don't show this form if already in feedback section -->
+        {% if fdbck_btn %}
         <form class="float-start ms-3" action="/recipes/{{ recipe.id }}">
           <button class="btn btn-sm btn-info float-start">
             <i class="fas fa-comments"></i>
           </button>
         </form>
+        {% endif %}
         {% endif %}
       </div>
       <div class="col-md-4 text-center">

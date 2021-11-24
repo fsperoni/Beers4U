@@ -130,7 +130,7 @@ def show_user():
     if (len(fav_string) > 0):
         response = requests.get(f"{BASE_URL}/beers{fav_string}")
         favorites = add_image(response.json())
-        return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids)
+        return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids, fdbck_btn=True)
     return render_template('show_user.html')
 
 @app.route('/users/delete', methods=['POST'])
@@ -167,7 +167,7 @@ def edit_user():
         if (len(fav_string) > 0):
             response = requests.get(f"{BASE_URL}/beers{fav_string}")
             favorites = add_image(response.json())
-            return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids)
+            return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids, fdbck_btn=True)
         return render_template('show_user.html')
     else:
         return render_template("edit_user.html", form=form)
@@ -199,7 +199,7 @@ def show_random_beer():
     response = requests.get(f"{BASE_URL}/beers/random")
     recipes = add_image(response.json()) 
 
-    return render_template('recipes.html', recipes=recipes)
+    return render_template('recipes.html', recipes=recipes, fdbck_btn=True)
 
 @app.route('/search/beers', methods=["POST"])
 def show_foods():
@@ -248,8 +248,8 @@ def show_recipes():
     else: 
         rec_ids = User.get_fav_rec_ids(g.user.id)
         if (len(rec_ids) > 0):
-            return render_template('recipes.html', recipes=recipes, rec_ids=rec_ids)
-        return render_template('recipes.html', recipes=recipes)
+            return render_template('recipes.html', recipes=recipes, rec_ids=rec_ids, fdbck_btn=True)
+        return render_template('recipes.html', recipes=recipes, fdbck_btn=True)
 
 
 ################################################################
@@ -278,7 +278,7 @@ def toggle_favorite(rec_id):
     if (len(fav_string) > 0):
         response = requests.get(f"{BASE_URL}/beers{fav_string}")
         favorites = add_image(response.json())
-        return render_template('show_user.html', favorites=favorites, rec_ids=rec_ids)
+        return render_template('show_user.html', favorites=favorites, rec_ids=rec_ids, fdbck_btn=True)
     return render_template('show_user.html')
 
 
@@ -312,11 +312,11 @@ def show_recipes_comments(rec_id):
     rec_ids = User.get_fav_rec_ids(g.user.id)
     if recipe and feedbacks:
         return render_template('feedback.html', form=form, rec_ids=rec_ids,
-            feedbacks=feedbacks, recipe=recipe[0])
+            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
     elif recipe:
         flash(f"No feedback found for {recipe[0].get('name')}", "info")
         return render_template('feedback.html', form=form, rec_ids=rec_ids, 
-            recipe=recipe[0])
+            recipe=recipe[0], fdbck_btn=False)
     else: 
         flash("Beer recipe not found.")
         return render_template('dashbarod.html')
