@@ -42,7 +42,7 @@ const clearForm = () => {
 $('#clearBtn').on('click', clearForm)
 
 /** Validate the recipe search form, preventing submission upon errors */
-function validateForm(e) {
+const validateForm = (e) => {
   $("p").remove(".error")
   let hasErrors = false
   const form = document.getElementById('recipeForm')
