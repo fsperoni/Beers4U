@@ -2,7 +2,8 @@
     <div class="row g-0">
       <div class="card-header fs-5"><b class="ms-3">{{ recipe.name }}</b>
         {% if g.user %}
-        <form class="float-start" id="favRecipe" action="/users/favorites/{{ recipe.id }}" method="POST">
+        <form class="float-start" id="favRecipe" method="POST"
+          action="/users/favorites/{{ recipe.id }}">
           <button id="favRecBtn" class="btn btn-sm float-start
             {{ 'btn-danger' if recipe.id in rec_ids else 'btn-secondary' }}">
             <i class="fas fa-heart"></i>
@@ -11,7 +12,7 @@
         <form class="float-start ms-3" action="/recipes/{{ recipe.id }}"
         id="favRecNote">
         <button id="favRecNoteBtn" class="btn btn-sm btn-info float-start' }}">
-          <i class="fas fa-edit"></i>
+          <i class="fas fa-comments"></i>
         </button>
       </form>
         {% endif %}

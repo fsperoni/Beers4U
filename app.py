@@ -298,18 +298,17 @@ def show_recipes_comments(rec_id):
     if form.validate_on_submit():
         title = form.title.data
         content = form.content.data
-        is_public = form.is_public.data
         recipe_id = rec_id
         user_id = g.user.id
         new_feedback= Feedback(title=title, content=content, recipe_id=recipe_id, 
-            is_public=is_public, user_id=user_id)
+            user_id=user_id)
 
         db.session.add(new_feedback)
         db.session.commit()
         flash('Feedback processed successfully!', "success")
     response = requests.get(f"{BASE_URL}/beers?ids={rec_id}")
     recipe = add_image(response.json())
-    feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).all()
+    feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at.desc()).all()
     rec_ids = User.get_fav_rec_ids(g.user.id)
     if recipe and feedbacks:
         return render_template('feedback.html', form=form, rec_ids=rec_ids,

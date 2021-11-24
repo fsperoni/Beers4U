@@ -67,13 +67,18 @@ class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    is_public = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
     recipe_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', 
         ondelete='CASCADE'), nullable=False)
 
     user = db.relationship('User')
+
+    @property
+    def format_date(self):
+        """Format date in a more friendly/readable text."""
+
+        return self.created_at.strftime('%b %d %Y at %H:%M') 
 
 class Like(db.Model):
     """Mapping user likes to Feedbacks."""

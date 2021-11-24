@@ -46,6 +46,3 @@ class FeedbackForm(FlaskForm):
             Length(max=100, message="Must be less than 100 characters long")])
     content = TextAreaField("Comments", validators=[
             InputRequired(message="Comments can't be blank")])
-    is_public = BooleanField("Post it publicly?", validators=[
-            InputRequired(message="Please make a choice.")
-    ])
