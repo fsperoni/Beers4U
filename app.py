@@ -320,3 +320,18 @@ def show_recipes_comments(rec_id):
     else: 
         flash("Beer recipe not found.")
         return render_template('dashbarod.html')
+
+@app.route('/users/feedbacks/<int:fdbck_id>/edit', methods=['GET','POST'])
+def edit_feedback(fdbck_id):
+    """
+        Display a form to edit the user feedback.
+        Processes the form and edits the feedback.
+    """
+
+    return redirect('/')
+
+@app.route('/users/feedbacks/<int:fdbck_id>/delete', methods=['POST'])
+def delete_feedback(fdbck_id):
+    """Delete user feedback."""
+
+    return redirect('/')

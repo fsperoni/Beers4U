@@ -41,9 +41,8 @@ const clearForm = () => {
 }
 $('#clearBtn').on('click', clearForm)
 
-/** Validate the recipe search form and send post request to server */
+/** Validate the recipe search form, preventing submission upon errors */
 async function validateForm(e) {
-  e.preventDefault()
   $("p").remove(".error")
   let hasErrors = false
   const form = document.getElementById('recipeForm')
@@ -63,17 +62,9 @@ async function validateForm(e) {
     $('#formEBC').append(msg)
     hasErrors = true
   }
-  if (!hasErrors) {
-    const response = await axios({
-      method: 'POST',
-      url: '/search/recipes',
-      data: formData
-    })
-    if (response.status === 200) {
-      clearForm()
-    }
-  }
+  if (hasErrors) e.preventDefault()
 }
+
 $('#recipeForm').on('submit', validateForm)
 
 /** Toggle favorite icon on pages that display recipes or pairings */

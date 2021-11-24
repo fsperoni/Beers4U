@@ -1,14 +1,13 @@
-<!-- work on routes to EDIT/DELETE FEEDBACK FOR OWNER ONLY -->
 <div class="card mt-3 mb-3">
   <div class="row g-0">
     <div class="card-header fs-5"><b class="ms-3">{{ fdbck.title }}</b>
       {% if g.user.id == fdbck.user_id %}
-      <form class="float-start" id="editFdbck" method="POST" action="/users/favorites/{{ recipe.id }}">
+      <form class="float-start" id="editFdbck" action="/users/feedbacks/{{ fdbck.id }}/edit">
         <button id="editFdbckBtn" class="btn btn-sm btn-success">
           <i class="fas fa-edit"></i>
         </button>
       </form>
-      <form class="float-start ms-3" id="delFdbck" action="/recipes/{{ recipe.id }}" >
+      <form class="float-start ms-3" id="delFdbck" action="/users/feedbacks/{{ fdbck.id }}/delete" method="POST">
         <button id="delFdbckBtn" class="btn btn-sm btn-danger float-start' }}">
           <i class="fas fa-trash-alt"></i>
         </button>
