@@ -42,7 +42,7 @@ const clearForm = () => {
 $('#clearBtn').on('click', clearForm)
 
 /** Validate the recipe search form, preventing submission upon errors */
-async function validateForm(e) {
+function validateForm(e) {
   $("p").remove(".error")
   let hasErrors = false
   const form = document.getElementById('recipeForm')
@@ -68,7 +68,6 @@ async function validateForm(e) {
     clearForm()
   }
 }
-
 $('#recipeForm').on('submit', validateForm)
 
 /** Toggle favorite icon on pages that display recipes or pairings */
