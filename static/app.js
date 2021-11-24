@@ -62,7 +62,11 @@ async function validateForm(e) {
     $('#formEBC').append(msg)
     hasErrors = true
   }
-  if (hasErrors) e.preventDefault()
+  if (hasErrors) {
+    e.preventDefault()
+  } else {
+    clearForm()
+  }
 }
 
 $('#recipeForm').on('submit', validateForm)
