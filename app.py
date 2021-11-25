@@ -87,7 +87,7 @@ def register_user():
             return render_template('register.html', form=form)
         do_login(new_user)
         flash('Welcome! Successfully Created Your Account!', "success")
-        return render_template("show_user.html")
+        return render_template("user_show.html")
     else:
         return render_template('register.html', form=form)
 
@@ -130,8 +130,8 @@ def show_user():
     if (len(fav_string) > 0):
         response = requests.get(f"{BASE_URL}/beers{fav_string}")
         favorites = add_image(response.json())
-        return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids, fdbck_btn=True)
-    return render_template('show_user.html')
+        return render_template('user_show.html', favorites=favorites, rec_ids=fav_rec_ids, fdbck_btn=True)
+    return render_template('user_show.html')
 
 @app.route('/users/delete', methods=['POST'])
 def delete_user():
@@ -167,10 +167,10 @@ def edit_user():
         if (len(fav_string) > 0):
             response = requests.get(f"{BASE_URL}/beers{fav_string}")
             favorites = add_image(response.json())
-            return render_template('show_user.html', favorites=favorites, rec_ids=fav_rec_ids, fdbck_btn=True)
-        return render_template('show_user.html')
+            return render_template('user_show.html', favorites=favorites, rec_ids=fav_rec_ids, fdbck_btn=True)
+        return render_template('user_show.html')
     else:
-        return render_template("edit_user.html", form=form)
+        return render_template("user_edit.html", form=form)
 
 @app.route('/logout')
 def user_logout():
@@ -278,8 +278,8 @@ def toggle_favorite(rec_id):
     if (len(fav_string) > 0):
         response = requests.get(f"{BASE_URL}/beers{fav_string}")
         favorites = add_image(response.json())
-        return render_template('show_user.html', favorites=favorites, rec_ids=rec_ids, fdbck_btn=True)
-    return render_template('show_user.html')
+        return render_template('user_show.html', favorites=favorites, rec_ids=rec_ids, fdbck_btn=True)
+    return render_template('user_show.html')
 
 
 ################################################################
@@ -311,11 +311,11 @@ def show_recipes_comments(rec_id):
     feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at.desc()).all()
     rec_ids = User.get_fav_rec_ids(g.user.id)
     if recipe and feedbacks:
-        return render_template('feedback.html', form=form, rec_ids=rec_ids,
+        return render_template('feedback_show.html', form=form, rec_ids=rec_ids,
             feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
     elif recipe:
         flash(f"No feedback found for {recipe[0].get('name')}", "info")
-        return render_template('feedback.html', form=form, rec_ids=rec_ids, 
+        return render_template('feedback_show.html', form=form, rec_ids=rec_ids, 
             recipe=recipe[0], fdbck_btn=False)
     else: 
         flash("Beer recipe not found.")
@@ -346,7 +346,7 @@ def edit_feedback(fdbck_id):
         feedbacks = Feedback.query.filter(Feedback.recipe_id == fdbck.recipe_id).order_by(Feedback.created_at.desc()).all()
         flash('Feedback updated successfully!', "success")
         form_blank = FeedbackForm()
-        return render_template('feedback.html', form=form_blank, rec_ids=rec_ids,
+        return render_template('feedback_show.html', form=form_blank, rec_ids=rec_ids,
             feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
     return render_template('feedback_edit.html', form=form, recipe=recipe[0], fdbck_id=fdbck.id, rec_ids=rec_ids)
 
@@ -355,4 +355,19 @@ def edit_feedback(fdbck_id):
 def delete_feedback(fdbck_id):
     """Delete user feedback."""
 
-    return redirect('/')
+    if not g.user:
+        form = UserLoginForm()
+        flash("Please login first!", "danger")
+        return render_template('login.html', form=form)
+    
+    form = FeedbackForm()
+    fdbck = Feedback.query.get_or_404(fdbck_id)
+    db.session.delete(fdbck)
+    db.session.commit()
+    rec_ids = User.get_fav_rec_ids(g.user.id)
+    response = requests.get(f"{BASE_URL}/beers?ids={fdbck.recipe_id}")
+    recipe = add_image(response.json())
+    feedbacks = Feedback.query.filter(Feedback.recipe_id == fdbck.recipe_id).order_by(Feedback.created_at.desc()).all()
+    flash('Feedback deleted successfully!', "success")
+    return render_template('feedback_show.html', form=form, rec_ids=rec_ids,
+            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
