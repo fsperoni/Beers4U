@@ -84,21 +84,21 @@ const goBack = (e) => {
   window.history.back()
 }
 //Get the button:
-// const scrollButton = document.getElementById("scrollBtn")
+const scrollButton = document.getElementById("scrollBtn")
 
-// window.onscroll = function() {toggleShowButton()}
+window.onscroll = function() {toggleShowButton()}
 
 /** Shows the button only when user scrolls down 20px from the top of the document*/
-// function toggleShowButton() {
-//   if (document.documentElement.scrollTop > 20) {
-//     scrollButton.style.display = "block"
-//   } else {
-//     scrollButton.style.display = "none"
-//   }
-// }
+const toggleShowButton = () => {
+  if (document.documentElement.scrollTop > 20) {
+    scrollButton.style.display = "block"
+  } else {
+    scrollButton.style.display = "none"
+  }
+}
 
-// /**  Scroll to the top of the document */
-// function scrollToTop() {
-//   document.documentElement.scrollTop = 0 
-// }
+/**  Scroll to the top of the document */
+const scrollToTop = () => {
+  document.documentElement.scrollTop = 0 
+}
 

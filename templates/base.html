@@ -10,6 +10,12 @@
   <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
 </head>
 <body class="d-flex flex-column h-100">
+  <div class="fixed-bottom mb-3 me-3">
+    <button class="btn btn-dark float-end" 
+      onclick="scrollToTop()" id="scrollBtn" title="Go to top">
+      Top
+    </button>
+  </div>
   <nav class="navbar navbar-light bg-dark justify-content-between ">
     <div class="container">
       <a href="/" class="navbar-brand text-light">
@@ -50,10 +56,6 @@
       {% block content %}
       {% endblock %}
   
-        <!-- <button class="position-absolute bottom-0 mb-3 me-3 end-0 btn btn-dark" 
-          onclick="scrollToTop()" id="scrollBtn" title="Go to top">
-          Top
-        </button> -->
     </div>
   </main>
   <footer class="footer mt-auto bg-dark py-3">
