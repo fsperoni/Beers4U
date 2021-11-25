@@ -77,7 +77,8 @@ const toggleFavoriteIcon = () => {
 }
 $('#favPairing').on('submit', toggleFavoriteIcon)
 
-
+// ABOVE NEEDS TO BE ADJUSTED, CAN'T USE FORM ID.... USE DATA-REC-ID (DATA ATTRIBUTE)? OR THIS WITH DELEGATION?
+// TOGGLE FAVORITE NEEDS JQUERY FOR FRONT-END AND AXIOS TO PROCESS BACKEND.
 
 //Get the button:
 // const scrollButton = document.getElementById("scrollBtn")

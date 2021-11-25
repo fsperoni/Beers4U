@@ -5,6 +5,12 @@
     
 {% include "_recipe.html" %}
 
-{% include "_form.html" %}
+<form class="mb-3" action="/users/feedbacks/{{ fdbck_id }}/edit" method="POST">
+
+  {% include "_form.html" %}
+
+  <button class="btn btn-success" type="submit">Save</button>
+  <a class="btn btn-warning ms-2" href='/'>Cancel</a>
+</form>
 
 {% endblock %}

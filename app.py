@@ -321,6 +321,7 @@ def show_recipes_comments(rec_id):
         flash("Beer recipe not found.")
         return render_template('dashbarod.html')
 
+
 @app.route('/users/feedbacks/<int:fdbck_id>/edit', methods=['GET','POST'])
 def edit_feedback(fdbck_id):
     """
@@ -328,7 +329,27 @@ def edit_feedback(fdbck_id):
         Processes the form and edits the feedback.
     """
 
-    return redirect('/')
+    if not g.user:
+        form = UserLoginForm()
+        flash("Please login first!", "danger")
+        return render_template('login.html', form=form)
+    
+    fdbck = Feedback.query.get_or_404(fdbck_id)
+    form = FeedbackForm(obj=fdbck)
+    rec_ids = User.get_fav_rec_ids(g.user.id)
+    response = requests.get(f"{BASE_URL}/beers?ids={fdbck.recipe_id}")
+    recipe = add_image(response.json())
+    if form.validate_on_submit():
+        fdbck.title = form.title.data
+        fdbck.content = form.content.data
+        db.session.commit()
+        feedbacks = Feedback.query.filter(Feedback.recipe_id == fdbck.recipe_id).order_by(Feedback.created_at.desc()).all()
+        flash('Feedback updated successfully!', "success")
+        form_blank = FeedbackForm()
+        return render_template('feedback.html', form=form_blank, rec_ids=rec_ids,
+            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
+    return render_template('feedback_edit.html', form=form, recipe=recipe[0], fdbck_id=fdbck.id, rec_ids=rec_ids)
+
 
 @app.route('/users/feedbacks/<int:fdbck_id>/delete', methods=['POST'])
 def delete_feedback(fdbck_id):
