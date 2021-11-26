@@ -211,10 +211,11 @@ def show_foods():
     if len(beers) == 0:
         flash("No beers found for your search criteria. Please try again.", "warning")
         return render_template('dashboard.html')
-    else: 
+    elif g.user: 
         rec_ids = User.get_fav_rec_ids(g.user.id)
         if (len(rec_ids) > 0):
             return render_template('pairing.html', beers=beers, rec_ids=rec_ids)
+    else:
         return render_template('pairing.html', beers=beers)
 
 @app.route('/search/foods', methods=["POST"])
@@ -227,10 +228,11 @@ def show_beers():
     if len(beers) == 0:
         flash("No beers found for your search criteria. Please try again.", "warning")
         return render_template('dashboard.html')
-    else: 
+    elif g.user:
         rec_ids = User.get_fav_rec_ids(g.user.id)
         if (len(rec_ids) > 0):
             return render_template('pairing.html', beers=beers, rec_ids=rec_ids)
+    else:
         return render_template('pairing.html', beers=beers)
 
 
