@@ -2,21 +2,18 @@
     <div class="row g-0">
       <div class="card-header fs-5"><b class="ms-3">{{ recipe.name }}</b>
         {% if g.user %}
-        <form class="float-start" id="favRecipe" method="POST"
-          action="/users/favorites/{{ recipe.id }}">
-          <button id="favRecBtn" class="btn btn-sm float-start
-            {{ 'btn-danger' if recipe.id in rec_ids else 'btn-secondary' }}">
+          <button class="btn btn-sm float-start fav-btn
+            {{ 'btn-danger' if recipe.id in rec_ids else 'btn-secondary' }}"
+            data-rec-id="{{ recipe.id }}">
             <i class="fas fa-heart"></i>
           </button>
-        </form>
-        <!-- Don't show this form if already in feedback section -->
-        {% if fdbck_btn %}
-        <form class="float-start ms-3" action="/recipes/{{ recipe.id }}">
-          <button class="btn btn-sm btn-info float-start">
-            <i class="fas fa-comments"></i>
-          </button>
-        </form>
-        {% endif %}
+          {% if fdbck_btn %}
+          <form class="float-start ms-3" action="/recipes/{{ recipe.id }}">
+            <button class="btn btn-sm btn-info float-start">
+              <i class="fas fa-comments"></i>
+            </button>
+          </form>
+          {% endif %}
         {% endif %}
       </div>
       <div class="col-md-4 text-center">

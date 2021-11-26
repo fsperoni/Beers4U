@@ -263,23 +263,28 @@ def toggle_favorite(rec_id):
         form = UserLoginForm()
         flash("Please login first!", "danger")
         return render_template('login.html', form=form)
+
+    print("********************************") 
+    print(rec_id)
     fav = Favorite.query.filter(Favorite.user_id == g.user.id, Favorite.recipe_id == rec_id).first()
     if fav:
         db.session.delete(fav)
-        flash("Recipe deleted from your favorites", "info")
+        # flash("Recipe deleted from your favorites", "info")
     else: 
-        flash("Recipe added to your favorites", "success")
+        # flash("Recipe added to your favorites", "success")
         new_fav = Favorite(user_id=g.user.id, recipe_id=rec_id)
         db.session.add(new_fav)
     db.session.commit()
     
-    rec_ids = User.get_fav_rec_ids(g.user.id)
-    fav_string = get_id_query_string(rec_ids)
-    if (len(fav_string) > 0):
-        response = requests.get(f"{BASE_URL}/beers{fav_string}")
-        favorites = add_image(response.json())
-        return render_template('user_show.html', favorites=favorites, rec_ids=rec_ids, fdbck_btn=True)
-    return render_template('user_show.html')
+    # rec_ids = User.get_fav_rec_ids(g.user.id)
+    # fav_string = get_id_query_string(rec_ids)
+    # if (len(fav_string) > 0):
+    #     response = requests.get(f"{BASE_URL}/beers{fav_string}")
+    #     favorites = add_image(response.json())
+    #     return render_template('user_show.html', favorites=favorites, rec_ids=rec_ids, fdbck_btn=True)
+    # return render_template('user_show.html')
+
+    return {"status": "success"}
 
 
 ################################################################

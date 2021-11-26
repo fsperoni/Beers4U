@@ -70,27 +70,42 @@ const validateForm = (e) => {
 }
 $('#recipeForm').on('submit', validateForm)
 
-/** Toggle favorite icon on pages that display recipes or pairings */
-const toggleFavoriteIcon = () => {
-  $('#favPairBtn').toggleClass("btn-danger")
-  $('#favPairBtn').toggleClass("btn-secondary")
+/**Process toggling favorite recipes and udpates icon*/
+$(document).on('click', '.fav-btn', async function () {
+  const recId = $(this.dataset)[0].recId
+  $(this).toggleClass("btn-danger")
+  $(this).toggleClass("btn-secondary")
+  const response = await toggleFav(recId)
+  // if toggle is not successful, update button and alert user
+  if (response.status !== 200) {
+    $(this).toggleClass("btn-danger")
+    $(this).toggleClass("btn-secondary")
+    alert("An error occurred, please try again.")
+  }
+})
+
+/**Toggles favorite on server/database */
+async function toggleFav(recId) {
+  const res = await axios({
+    method: "POST",
+    url: `/users/favorites/${recId}`
+  })
+  return res
 }
-$('#favPairing').on('submit', toggleFavoriteIcon)
 
-// ABOVE NEEDS TO BE ADJUSTED, CAN'T USE FORM ID.... USE DATA-REC-ID (DATA ATTRIBUTE)? OR THIS WITH DELEGATION?
-// TOGGLE FAVORITE NEEDS JQUERY FOR FRONT-END AND AXIOS TO PROCESS BACKEND.
-
+/** Goes back using browser history */
 const goBack = (e) => {
   window.history.back()
 }
+
 //Get the button:
 const scrollButton = document.getElementById("scrollBtn")
 
-window.onscroll = function() {toggleShowButton()}
+window.onscroll = () => {toggleShowButton()}
 
-/** Shows the button only when user scrolls down 20px from the top of the document*/
+/** Shows the button only when user scrolls down 100px from the top of the document*/
 const toggleShowButton = () => {
-  if (document.documentElement.scrollTop > 20) {
+  if (document.documentElement.scrollTop > 100) {
     scrollButton.style.display = "block"
   } else {
     scrollButton.style.display = "none"

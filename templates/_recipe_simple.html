@@ -2,13 +2,11 @@
   <div class="row g-0">
     <div class="card-header fs-5"><b class="ms-3">{{ beer.name }}</b>
       {% if g.user %}
-      <form class="float-start" action="/users/favorites/{{ beer.id }}"
-        id="favPairing" method="POST">
-        <button id="favPairBtn" class="btn btn-sm 
-          {{ 'btn-danger' if beer.id in rec_ids else 'btn-secondary' }}">
-          <i class="fas fa-heart"></i>
-        </button>
-      </form>
+      <button class="btn btn-sm float-start fav-btn
+        {{ 'btn-danger' if beer.id in rec_ids else 'btn-secondary' }}"
+        data-rec-id="{{ beer.id }}">
+        <i class="fas fa-heart"></i>
+      </button>
       <form class="float-start ms-3" action="/recipes/{{ beer.id }}">
         <button class="btn btn-sm btn-info float-start">
           <i class="fas fa-comments"></i>
