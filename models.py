@@ -89,8 +89,8 @@ class Like(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'))
 
-    feedback_id = db.Column(db.Integer, 
-        db.ForeignKey('feedbacks.id', ondelete='cascade'), unique=True)
+    feedback_id = db.Column(db.Integer, db.ForeignKey('feedbacks.id', 
+        ondelete='cascade'), unique=True)
 
 class Dislike(db.Model):
     """Mapping user dislikes to Feedbacks."""

@@ -307,11 +307,11 @@ def show_recipes_comments(rec_id):
     rec_ids = User.get_fav_rec_ids(g.user.id)
     if recipe and feedbacks:
         return render_template('feedback_show.html', form=form, rec_ids=rec_ids,
-            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
+            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False, likes=feedbacks, dislikes=feedbacks)
     elif recipe:
         flash(f"No feedback found for {recipe[0].get('name')}", "info")
         return render_template('feedback_show.html', form=form, rec_ids=rec_ids, 
-            recipe=recipe[0], fdbck_btn=False)
+            recipe=recipe[0], fdbck_btn=False, likes=feedbacks, dislikes=feedbacks)
     else: 
         flash("Beer recipe not found.")
         return render_template('dashbarod.html')
@@ -342,7 +342,7 @@ def edit_feedback(fdbck_id):
         flash('Feedback updated successfully!', "success")
         form_blank = FeedbackForm()
         return render_template('feedback_show.html', form=form_blank, rec_ids=rec_ids,
-            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
+            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False, likes=feedbacks, dislikes=feedbacks)
     return render_template('feedback_edit.html', form=form, recipe=recipe[0], fdbck_id=fdbck.id, rec_ids=rec_ids)
 
 
@@ -365,4 +365,4 @@ def delete_feedback(fdbck_id):
     feedbacks = Feedback.query.filter(Feedback.recipe_id == fdbck.recipe_id).order_by(Feedback.created_at.desc()).all()
     flash('Feedback deleted successfully!', "success")
     return render_template('feedback_show.html', form=form, rec_ids=rec_ids,
-            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False)
+            feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False, likes=feedbacks, dislikes=feedbacks)

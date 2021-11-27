@@ -23,5 +23,13 @@
       <p class="card-text">{{ fdbck.user.full_name }} 
         <small class="text-muted">on {{ fdbck.format_date }}</small></p>
     </div>
+    <div class="card-footer">
+      <button class="like-btn btn btn-sm {{ 'btn-primary' if fdbck in g.user.likes }}">
+        <i class="far fa-thumbs-up"></i><small>{{ fdbck.likes|length }}</small>
+      </button>
+      <button class="dislike-btn ms-1 btn btn-sm {{ 'btn-primary' if fdbck in g.user.dislikes }}">
+        <i class="far fa-thumbs-down"></i><small>{{ fdbck.dislikes|length }}</small>
+      </button>
+    </div>
   </div>
 </div>
