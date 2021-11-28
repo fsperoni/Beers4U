@@ -5,7 +5,9 @@
     
 {% include "_recipe.html" %}
 
-{% include "_feedback_sort.html"}
+{% if feedbacks %}
+  {% include "_feedback_sort.html" %}
+{% endif %}
 
 {% for fdbck in feedbacks %}
     {% include "_one_feedback.html" %}

@@ -4,6 +4,7 @@ from models import db, connect_db, User, Feedback, Favorite, Like, Dislike
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import UserCreateForm, UserLoginForm, UserEditForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
 from helpers import add_image, get_id_query_string, get_recipe_query_string
 import requests
 
@@ -373,6 +374,7 @@ def delete_feedback(fdbck_id):
 
 @app.route('/users/feedbacks/<int:fdbck_id>/like', methods=['POST'])
 def toggle_like(fdbck_id):
+    """Handle clicking on like button for a feedback."""
     like = Like.query.filter(Like.feedback_id == fdbck_id, Like.user_id == g.user.id).first()
     res = {}
     if like: 
@@ -390,7 +392,8 @@ def toggle_like(fdbck_id):
     return res
 
 @app.route('/users/feedbacks/<int:fdbck_id>/dislike', methods=['POST'])
-def toggle_dislike(fdbck_id):    
+def toggle_dislike(fdbck_id):
+    """Handle clicking on dislike button for a feedback."""
     dislike = Dislike.query.filter(Dislike.feedback_id == fdbck_id, Dislike.user_id == g.user.id).first()
     res = {}
     if dislike: 
@@ -406,3 +409,44 @@ def toggle_dislike(fdbck_id):
     feedback = Feedback.query.get_or_404(fdbck_id)
     res.update({'counters':{'likes':len(feedback.likes),'dislikes': len(feedback.dislikes)}})
     return res
+
+@app.route('/users/feedbacks/<int:rec_id>/sort', methods=['POST'])
+def sort_feedback(rec_id):
+    """Sort feedback based on criteria received."""
+    
+    if not g.user:
+        form = UserLoginForm()
+        flash("Please login first!", "danger")
+        return render_template('login.html', form=form)
+    
+    field = request.form['sort-field']
+    order = request.form['sort-order']
+    
+    
+    if field == 'date' and order == 'desc':
+        feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at.desc()).all()
+    elif field == 'date' and order == 'asc':
+        feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at).all()
+    # elif field == 'like' and order == 'desc':
+    #     feedbacks = db.session.query(Feedback, func.count(Feedback.likes)).filter(Feedback.recipe_id == rec_id).group_by(Feedback, Like).order_by(Feedback.likes).all()
+        # print("****************************************************************")
+        # print(feedbacks)
+        # print(feedbacks[0][0].created_at)
+        # print(feedbacks[0][1])
+        # feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.likes.desc()).all()
+    # elif field == 'like' and order == 'asc':
+    #     feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.likes).all()
+    # elif field == 'dislike' and order == 'desc':
+    #     feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.dislikes.desc()).all()
+    # elif field == 'dislike' and order == 'asc':
+    #     feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.dislikes).all()
+    else:
+        flash("Unable to apply sorting criteria. Please try again.", "warning")
+        return render_template('dashboard.html')
+    form = FeedbackForm()
+    response = requests.get(f"{BASE_URL}/beers?ids={rec_id}")
+    recipe = add_image(response.json())
+    rec_ids = User.get_fav_rec_ids(g.user.id)
+    flash('Sorting criteria applied successfully!', "success")
+    return render_template('feedback_show.html', form=form, rec_ids=rec_ids, 
+        feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False, likes=feedbacks, dislikes=feedbacks)

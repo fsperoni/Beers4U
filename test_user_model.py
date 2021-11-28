@@ -4,7 +4,7 @@ import os
 from unittest import TestCase
 from sqlalchemy.exc import IntegrityError
 
-from models import db, User
+from models import db, User, Favorite
 
 os.environ['DATABASE_URL'] = "postgresql:///beers4u-test"
 
@@ -141,33 +141,25 @@ class UserModelTestCase(TestCase):
     def test_wrong_password(self):
         self.assertFalse(User.authenticate(self.u1.username, "badpassword"))
 
-    ####
-    #
-    # Following tests
-    #
-    ####
-    # def test_user_follows(self):
-    #     self.u1.following.append(self.u2)
-    #     db.session.commit()
+    # Favorite Tests
 
-    #     self.assertEqual(len(self.u2.following), 0)
-    #     self.assertEqual(len(self.u2.followers), 1)
-    #     self.assertEqual(len(self.u1.followers), 0)
-    #     self.assertEqual(len(self.u1.following), 1)
+    def test_favorite_recipe(self):
 
-    #     self.assertEqual(self.u2.followers[0].id, self.u1.id)
-    #     self.assertEqual(self.u1.following[0].id, self.u2.id)
+        u = User.register("test3", "password", "email3@email.com", "test3", "user3")
+        uid = 888
+        u.id = uid
+        fav = Favorite(
+            user_id=uid, 
+            recipe_id=2
+        )
+        db.session.add_all([fav, u])
+        db.session.commit()
 
-    # def test_is_following(self):
-    #     self.u1.following.append(self.u2)
-    #     db.session.commit()
+        u.favorites.append(fav)
 
-    #     self.assertTrue(self.u1.is_following(self.u2))
-    #     self.assertFalse(self.u2.is_following(self.u1))
+        db.session.commit()
 
-    # def test_is_followed_by(self):
-    #     self.u1.following.append(self.u2)
-    #     db.session.commit()
-
-    #     self.assertTrue(self.u2.is_followed_by(self.u1))
-    #     self.assertFalse(self.u1.is_followed_by(self.u2))
+        f = Favorite.query.filter(Favorite.user_id == uid).all()
+        self.assertEqual(len(f), 1)
+        self.assertEqual(f[0].user_id, uid)
+        self.assertEqual(f[0].recipe_id, 2)

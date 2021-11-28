@@ -28,6 +28,20 @@ const checkRecipeInput = (e) => {
 }
 $('#recipeForm').on('change', checkRecipeInput)
 
+/** Toggle Sort feedback button enabled/disabled */
+const checkSortInput = (e) => {
+  const sortFields = $('.sort')
+  let isDisabled = false
+  sortFields.each(function() {
+    if ($(this).val().trim() === '') {
+      isDisabled = true
+      return false
+    }
+  })
+  $('#sortBtn').prop('disabled', isDisabled)
+}
+$('#sortForm').on('change', checkSortInput)
+
 /** Initialize tooltips */
 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -35,15 +49,16 @@ const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 })
 
 /** Clear the recipe search form */
-const clearForm = () => {
-  $('#recipeForm').trigger('reset');
-  $('#recipeBtn').prop('disabled', true);
+const clearRecipeForm = () => {
+  $('#recipeForm').trigger('reset')
+  $('#recipeForm').find("p").remove(".error")
+  $('#recipeBtn').prop('disabled', true)
 }
-$('#clearBtn').on('click', clearForm)
+$('#clearBtn').on('click', clearRecipeForm)
 
 /** Validate the recipe search form, preventing submission upon errors */
-const validateForm = (e) => {
-  $("p").remove(".error")
+const validateRecipeForm = (e) => {
+  $('#recipeForm').find("p").remove(".error")
   let hasErrors = false
   const form = document.getElementById('recipeForm')
   const formData = new FormData(form)
@@ -65,10 +80,39 @@ const validateForm = (e) => {
   if (hasErrors) {
     e.preventDefault()
   } else {
-    clearForm()
+    clearRecipeForm()
   }
 }
-$('#recipeForm').on('submit', validateForm)
+$('#recipeForm').on('submit', validateRecipeForm)
+
+/** Clear the sort feedback form */
+const clearSortForm = () => {
+  $('#sortForm').trigger('reset')
+  $('#sortForm').find("p").remove(".error")
+  $('#sortBtn').prop('disabled', true)
+}
+
+/** Validate the sort feedback form, preventing submission upon errors */
+const validateSortForm = (e) => {
+  $('#sortForm').find("p").remove(".error")
+  let hasErrors = false
+  const form = document.getElementById('sortForm')
+  const formData = new FormData(form)
+  if (!formData.get('sort-field')) {
+    hasErrors = true
+    const msg = $('<p>').addClass('error').html('<small class="text-danger">Check this entry.</small>')
+    $('#sort-field').parent().append(msg)
+  }
+  if (!formData.get('sort-order')) {
+    hasErrors = true
+    const msg = $('<p>').addClass('error').html('<small class="text-danger">Check this entry.</small>')
+    $('#sort-order').parent().append(msg)
+  }
+  if (hasErrors) {
+    e.preventDefault()
+  } 
+}
+$('#sortForm').on('submit', validateSortForm)
 
 /**Process toggling favorite recipes and udpates icon*/
 $(document).on('click', '.fav-btn', async function () {
