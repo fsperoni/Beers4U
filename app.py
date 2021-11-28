@@ -1,6 +1,6 @@
 """Flask app for Feedback"""
 from flask import Flask, render_template, redirect, session, flash, request, g
-from models import db, connect_db, User, Feedback, Favorite
+from models import db, connect_db, User, Feedback, Favorite, Like, Dislike
 from flask_debugtoolbar import DebugToolbarExtension
 from forms import UserCreateForm, UserLoginForm, UserEditForm, FeedbackForm
 from sqlalchemy.exc import IntegrityError
@@ -366,3 +366,43 @@ def delete_feedback(fdbck_id):
     flash('Feedback deleted successfully!', "success")
     return render_template('feedback_show.html', form=form, rec_ids=rec_ids,
             feedbacks=feedbacks, recipe=recipe[0], fdbck_btn=False, likes=feedbacks, dislikes=feedbacks)
+
+
+################################################################
+# Like / Dislike routes
+
+@app.route('/users/feedbacks/<int:fdbck_id>/like', methods=['POST'])
+def toggle_like(fdbck_id):
+    like = Like.query.filter(Like.feedback_id == fdbck_id, Like.user_id == g.user.id).first()
+    res = {}
+    if like: 
+        db.session.delete(like)
+    else: 
+        like = Like(user_id=g.user.id, feedback_id=fdbck_id)
+        db.session.add(like)
+        dislike = Dislike.query.filter(Dislike.feedback_id == fdbck_id, Dislike.user_id == g.user.id).first()
+        if dislike:
+            db.session.delete(dislike)
+            res.update({'dislike': 'deleted'})
+    db.session.commit()
+    feedback = Feedback.query.get_or_404(fdbck_id)
+    res.update({'counters':{'likes':len(feedback.likes),'dislikes': len(feedback.dislikes)}})
+    return res
+
+@app.route('/users/feedbacks/<int:fdbck_id>/dislike', methods=['POST'])
+def toggle_dislike(fdbck_id):    
+    dislike = Dislike.query.filter(Dislike.feedback_id == fdbck_id, Dislike.user_id == g.user.id).first()
+    res = {}
+    if dislike: 
+        db.session.delete(dislike)
+    else: 
+        dislike = Dislike(user_id=g.user.id, feedback_id=fdbck_id)
+        db.session.add(dislike)
+        like = Like.query.filter(Like.feedback_id == fdbck_id, Like.user_id == g.user.id).first()
+        if like:
+            db.session.delete(like)
+            res.update({'like': 'deleted'})
+    db.session.commit()
+    feedback = Feedback.query.get_or_404(fdbck_id)
+    res.update({'counters':{'likes':len(feedback.likes),'dislikes': len(feedback.dislikes)}})
+    return res

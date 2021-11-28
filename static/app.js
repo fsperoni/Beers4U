@@ -93,6 +93,62 @@ async function toggleFav(recId) {
   return res
 }
 
+/**Process toggling like on feedbacks and udpate icons*/
+$(document).on('click', '.like-btn', async function () {
+  const feedbackId = $(this.dataset)[0].feedbackId
+  $(this).toggleClass("btn-primary")
+  const response = await toggleLike(feedbackId)
+  // if toggle is not successful, update button and alert user
+  if (response.status !== 200) {
+    $(this).toggleClass("btn-primary")
+    alert("An error occurred, please try again.")
+    return
+  }
+  if (response.data.dislike === "deleted") {
+    $(this).siblings('.dislike-btn').toggleClass("btn-danger")
+  }
+  const counters = response.data.counters
+  $(this).children("small").text(counters.likes)
+  $(this).siblings('.dislike-btn').children("small").text(counters.dislikes)
+})
+
+/**Toggles like on server/database */
+async function toggleLike(feedbackId) {
+  const res = await axios({
+    method: "POST",
+    url: `/users/feedbacks/${feedbackId}/like`
+  })
+  return res
+}
+
+/**Process toggling dislike on feedbacks and udpate icons*/
+$(document).on('click', '.dislike-btn', async function () {
+  const feedbackId = $(this.dataset)[0].feedbackId
+  $(this).toggleClass("btn-danger")
+  const response = await toggleDislike(feedbackId)
+  // if toggle is not successful, update button and alert user
+  if (response.status !== 200) {
+    $(this).toggleClass("btn-danger")
+    alert("An error occurred, please try again.")
+    return
+  }
+  if (response.data.like === "deleted") {
+    $(this).siblings('.like-btn').toggleClass("btn-primary")
+  }
+  const counters = response.data.counters
+  $(this).children("small").text(counters.dislikes)
+  $(this).siblings('.like-btn').children("small").text(counters.likes)
+})
+
+/**Toggles like and dislike on server/database */
+async function toggleDislike(feedbackId) {
+  const res = await axios({
+    method: "POST",
+    url: `/users/feedbacks/${feedbackId}/dislike`
+  })
+  return res
+}
+
 /** Goes back using browser history */
 const goBack = (e) => {
   window.history.back()

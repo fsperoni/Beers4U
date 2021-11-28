@@ -72,6 +72,9 @@ class Feedback(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', 
         ondelete='CASCADE'), nullable=False)
 
+    likes = db.relationship('Like', backref="feedback")
+    dislikes = db.relationship('Dislike', backref="feedback")
+
     user = db.relationship('User')
 
     @property
