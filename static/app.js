@@ -150,13 +150,14 @@ async function toggleDislike(feedbackId) {
 }
 
 /** Goes back using browser history */
-const goBack = (e) => {
+const goBack = () => {
   window.history.back()
 }
 
-//Get the button:
+//The scroll to the top button
 const scrollButton = document.getElementById("scrollBtn")
 
+//Add scroll event listener
 window.onscroll = () => {toggleShowButton()}
 
 /** Shows the button only when user scrolls down 100px from the top of the document*/
