@@ -421,19 +421,18 @@ def sort_feedback(rec_id):
     field = request.form['sort-field']
     order = request.form['sort-order']
     
-    
     if field == 'date' and order == 'desc':
         feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at.desc()).all()
     elif field == 'date' and order == 'asc':
         feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at).all()
     elif field == 'like' and order == 'desc':
-        feedbacks = db.session.query(Feedback).outerjoin(Like).group_by(Feedback.id).order_by(func.count().desc()).all()
+        feedbacks = db.session.query(Feedback).outerjoin(Like).group_by(Feedback.id).order_by(func.count(Feedback.likes).desc()).all()
     elif field == 'like' and order == 'asc':
-        feedbacks = db.session.query(Feedback).outerjoin(Like).group_by(Feedback.id).order_by(func.count()).all()
+        feedbacks = db.session.query(Feedback).outerjoin(Like).group_by(Feedback.id).order_by(func.count(Feedback.likes)).all()
     elif field == 'dislike' and order == 'desc':
-        feedbacks = db.session.query(Feedback).outerjoin(Dislike).group_by(Feedback.id).order_by(func.count().desc()).all()
+        feedbacks = db.session.query(Feedback).outerjoin(Dislike).group_by(Feedback.id).order_by(func.count(Feedback.dislikes).desc()).all()
     elif field == 'dislike' and order == 'asc':
-        feedbacks = db.session.query(Feedback).outerjoin(Dislike).group_by(Feedback.id).order_by(func.count()).all()
+        feedbacks = db.session.query(Feedback).outerjoin(Dislike).group_by(Feedback.id).order_by(func.count(Feedback.dislikes)).all()
     else:
         flash("Unable to apply sorting criteria. Please try again.", "warning")
         return render_template('dashboard.html')

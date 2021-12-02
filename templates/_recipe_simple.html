@@ -34,6 +34,21 @@
           {% endfor %}
         </ul> 
       </div>
+      <div class="card-body">
+        <h5 class="card-title">Info you may find useful:</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">Alcohol by volume (ABV): {{ beer.abv }}</li>
+          <li class="list-group-item">International Bitterness Units (IBU): {{ beer.ibu }}</li>
+          <li class="list-group-item">Ph: {{ beer.ph }}</li>
+          <li class="list-group-item">Malt:
+            <ul class="list-group list-group-flush">
+              {% for malt in beer.ingredients.malt %}
+              <li class="list-group-item">{{ malt.name }}</li>
+              {% endfor %}
+            </ul>
+          </li>
+        </ul> 
+      </div>
     </div>
   </div>
 </div>
