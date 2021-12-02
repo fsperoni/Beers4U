@@ -184,7 +184,7 @@ $(document).on('click', '.dislike-btn', async function () {
   $(this).siblings('.like-btn').children("small").text(counters.likes)
 })
 
-/**Toggles like and dislike on server/database */
+/**Toggles dislike on server/database */
 async function toggleDislike(feedbackId) {
   const res = await axios({
     method: "POST",

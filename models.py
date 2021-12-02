@@ -18,12 +18,12 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 
-    feedbacks = db.relationship('Feedback')
+    feedbacks = db.relationship('Feedback', cascade='all, delete')
 
     likes = db.relationship('Feedback', secondary="likes")
     dislikes = db.relationship('Feedback', secondary="dislikes")
 
-    favorites = db.relationship('Favorite', backref="user")
+    favorites = db.relationship('Favorite', backref="user", cascade='all, delete')
 
     @classmethod
     def register(cls, username, pwd, email, first_name, last_name):
@@ -70,10 +70,10 @@ class Feedback(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
     recipe_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', 
-        ondelete='CASCADE'), nullable=False)
+        ondelete='cascade'), nullable=False)
 
-    likes = db.relationship('Like', backref="feedback")
-    dislikes = db.relationship('Dislike', backref="feedback")
+    likes = db.relationship('Like', backref="feedback", cascade='all, delete')
+    dislikes = db.relationship('Dislike', backref="feedback", cascade='all, delete')
 
     user = db.relationship('User')
 
@@ -93,7 +93,7 @@ class Like(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'))
 
     feedback_id = db.Column(db.Integer, db.ForeignKey('feedbacks.id', 
-        ondelete='cascade'), unique=True)
+        ondelete='cascade'))
 
 class Dislike(db.Model):
     """Mapping user dislikes to Feedbacks."""
@@ -105,7 +105,7 @@ class Dislike(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'))
 
     feedback_id = db.Column(db.Integer, db.ForeignKey('feedbacks.id', 
-        ondelete='cascade'), unique=True)
+        ondelete='cascade'))
 
 class Favorite(db.Model):
     """Flagging beer recipe as favorite."""
@@ -116,7 +116,7 @@ class Favorite(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='cascade'))
 
-    recipe_id = db.Column(db.Integer, unique=True)
+    recipe_id = db.Column(db.Integer)
 
     def __repr__(self):
         return f"<Favorite #{self.id}: {self.user_id}, {self.recipe_id}>"

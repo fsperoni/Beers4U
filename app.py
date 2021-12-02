@@ -38,13 +38,14 @@ def do_login(user):
     """Log in user."""
 
     session[CURR_USER] = user.id
+    g.user = user
 
 
 def do_logout():
     """Logout user."""
 
     if CURR_USER in session:
-        del session[CURR_USER] 
+        del session[CURR_USER]
 
 
 @app.errorhandler(404)
@@ -88,7 +89,7 @@ def register_user():
             return render_template('register.html', form=form)
         do_login(new_user)
         flash('Welcome! Successfully Created Your Account!', "success")
-        return render_template("user_show.html")
+        return render_template("user_show.html", user=new_user)
     else:
         return render_template('register.html', form=form)
 
@@ -112,7 +113,7 @@ def login_user():
         if user:
             do_login(user)
             flash(f"Welcome back {user.full_name}!", "primary")
-            return render_template("dashboard.html")
+            return render_template("dashboard.html", user=user)
         else:
             form.username.errors = ['Invalid username/password.']
 
@@ -216,8 +217,7 @@ def show_foods():
         rec_ids = User.get_fav_rec_ids(g.user.id)
         if (len(rec_ids) > 0):
             return render_template('pairing.html', beers=beers, rec_ids=rec_ids)
-    else:
-        return render_template('pairing.html', beers=beers)
+    return render_template('pairing.html', beers=beers)
 
 @app.route('/search/foods', methods=["POST"])
 def show_beers():
@@ -233,8 +233,7 @@ def show_beers():
         rec_ids = User.get_fav_rec_ids(g.user.id)
         if (len(rec_ids) > 0):
             return render_template('pairing.html', beers=beers, rec_ids=rec_ids)
-    else:
-        return render_template('pairing.html', beers=beers)
+    return render_template('pairing.html', beers=beers)
 
 
 @app.route('/search/recipes', methods=["POST"])
@@ -427,19 +426,14 @@ def sort_feedback(rec_id):
         feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at.desc()).all()
     elif field == 'date' and order == 'asc':
         feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.created_at).all()
-    # elif field == 'like' and order == 'desc':
-    #     feedbacks = db.session.query(Feedback, func.count(Feedback.likes)).filter(Feedback.recipe_id == rec_id).group_by(Feedback, Like).order_by(Feedback.likes).all()
-        # print("****************************************************************")
-        # print(feedbacks)
-        # print(feedbacks[0][0].created_at)
-        # print(feedbacks[0][1])
-        # feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.likes.desc()).all()
-    # elif field == 'like' and order == 'asc':
-    #     feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.likes).all()
-    # elif field == 'dislike' and order == 'desc':
-    #     feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.dislikes.desc()).all()
-    # elif field == 'dislike' and order == 'asc':
-    #     feedbacks = Feedback.query.filter(Feedback.recipe_id == rec_id).order_by(Feedback.dislikes).all()
+    elif field == 'like' and order == 'desc':
+        feedbacks = db.session.query(Feedback).outerjoin(Like).group_by(Feedback.id).order_by(func.count().desc()).all()
+    elif field == 'like' and order == 'asc':
+        feedbacks = db.session.query(Feedback).outerjoin(Like).group_by(Feedback.id).order_by(func.count()).all()
+    elif field == 'dislike' and order == 'desc':
+        feedbacks = db.session.query(Feedback).outerjoin(Dislike).group_by(Feedback.id).order_by(func.count().desc()).all()
+    elif field == 'dislike' and order == 'asc':
+        feedbacks = db.session.query(Feedback).outerjoin(Dislike).group_by(Feedback.id).order_by(func.count()).all()
     else:
         flash("Unable to apply sorting criteria. Please try again.", "warning")
         return render_template('dashboard.html')

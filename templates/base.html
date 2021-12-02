@@ -25,7 +25,7 @@
         </div>
       </a>
       <ul class="nav navbar-nav flex-row float-right">
-        {% if g.user %}
+        {% if session['current_user'] %}
         <li class="nav-item">
           <form action="/users/show" method="POST">
             <button class="btn btn-dark nav-link pr-3 text-light">
