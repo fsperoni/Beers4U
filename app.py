@@ -10,7 +10,10 @@ import requests
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///beers4u')
+uri = os.getenv('DATABASE_URL')
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(uri, 'postgresql:///beers4u')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'temporary_development_key')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 app.config['SQLALCHEMY_ECHO'] = True
