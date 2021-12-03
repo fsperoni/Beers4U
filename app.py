@@ -91,7 +91,7 @@ def register_user():
             return render_template('register.html', form=form)
         do_login(new_user)
         flash('Welcome! Successfully Created Your Account!', "success")
-        return render_template("user_show.html", user=new_user)
+        return render_template("dashboard.html")
     else:
         return render_template('register.html', form=form)
 
