@@ -77,11 +77,8 @@ const validateRecipeForm = (e) => {
     $('#formEBC').append(msg)
     hasErrors = true
   }
-  if (hasErrors) {
-    e.preventDefault()
-  } else {
-    clearRecipeForm()
-  }
+  if (hasErrors) e.preventDefault()
+
 }
 $('#recipeForm').on('submit', validateRecipeForm)
 

@@ -249,11 +249,11 @@ def show_recipes():
     if len(recipes) == 0:
         flash("No beers found for your search criteria. Please try again.", "warning")
         return render_template('dashboard.html')
-    else: 
+    elif g.user:
         rec_ids = User.get_fav_rec_ids(g.user.id)
         if (len(rec_ids) > 0):
             return render_template('recipes.html', recipes=recipes, rec_ids=rec_ids, fdbck_btn=True)
-        return render_template('recipes.html', recipes=recipes, fdbck_btn=True)
+    return render_template('recipes.html', recipes=recipes, fdbck_btn=True)
 
 
 ################################################################
