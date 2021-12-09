@@ -71,6 +71,7 @@ The website will offer a customized experience not only for users who are curiou
 * PostgreSQL;
 * Python
  * Flask;
+ * Jinja;
  * WTForms;
 * SQLAlchemy
 
