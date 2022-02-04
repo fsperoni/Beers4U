@@ -11,7 +11,7 @@ class UserCreateForm(FlaskForm):
             InputRequired(message="Password is required")])
     email = EmailField("Email Address", validators=[
             InputRequired(message="Email address can't be blank"),
-            Length(max=20, message="Must be less than 50 characters long")])
+            Length(max=50, message="Must be less than 50 characters long")])
     first_name = StringField("First Name", validators=[
             InputRequired(message="First Name can't be blank"),
             Length(min=2, max=30, message="Must be 2-30 characters long")])
@@ -31,7 +31,7 @@ class UserEditForm(FlaskForm):
     """Form for user edit."""
     email = EmailField("Email Address", validators=[
             InputRequired(message="Email address can't be blank"),
-            Length(max=20, message="Must be less than 50 characters long")])
+            Length(max=50, message="Must be less than 50 characters long")])
     first_name = StringField("First Name", validators=[
             InputRequired(message="First Name can't be blank"),
             Length(min=2, max=30, message="Must be 2-30 characters long")])
