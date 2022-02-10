@@ -29,10 +29,10 @@ Making use of the [Punk API](https://punkapi.com/), the website can provide a hu
 Here's an example of what a JSON response from the API looks like: 
 ![Example JSON response](static/example.png)
 
-## Aproach
+## Approach
 
 ### Database Schema
-The application will make use of two databases: a User and a Favorite database, according to the schema below. The recipeID column in the Favorite database will be an integer that references the beer recipe ID obtained from the API.
+The application will make use of five tables: User, Feedback, Favorite, Like, Dislike, according to the schema below. The recipeID column in the Favorite database will be an integer that references the beer recipe ID obtained from the API.
 
 ![Database Schema](static/database_schema.png)
 ### Potential issues
